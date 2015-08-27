@@ -247,81 +247,81 @@ classdef Expt_StaircasedDividedAttention
                 for currTrialNum = 1:numTrials % Trial Start
                     
                     
-                    % -------------------------
-                    % Execute Single Trial
-                    % -------------------------
-                    obj.block.trials(currTrialNum).trial_order_num  = currTrialNum;  % save trial order number to data object
-                    stim_search                                     = obj.block.trials(currTrialNum).searchStimuli;
-                    %                     if(daqCard.isPresent); daqCard.resetPorts(); end
-                    
-                    ITI_processing_time     = (GetSecs-ITI_start_time);
-                    leftover_ITI_dur        = ITI_dur -ITI_processing_time;
-                    WaitSecs(leftover_ITI_dur);
-                    fprintf('Nominal ITI Duration:\t%-8.4f\tms\n'       , ITI_dur               *1000);
-                    fprintf('Actual  ITI Duration:\t%-8.4f\tms\n'       , (GetSecs-ITI_start_time)*1000);
-                    fprintf('=================================================\n');
-                    fprintf('Current trial Num:\t%3d / %3d\t trials\n'  , currTrialNum, numTrials);
-                    fprintf('\n');
-                    
-                    
-                    % -------------------------
-                    % Present: Pre-trial frame
-                    % -------------------------
-                    background.draw(winPtr);
-                    fixation.draw(winPtr);
-                    Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
-                    WaitSecs(obj.pre_trial_duration);                                       % wait:
-                    %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
-                    
-                    
-                    % ----------------------------------
-                    % Present: Search frame
-                    % ----------------------------------
-                    %                     start = GetSecs;
-                    background.draw(winPtr);
-                    fixation.draw(winPtr);
-                    stim_search.draw(winPtr, screenCenter_pt);
-                    Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
-                    %                     daqCard.sendEventCode(target_eventCode);                                % send event code
-                    %                     targDisplaySOA = GetSecs-start;
-                    
-                    
-                    % ----------------------------------
-                    % Subj Response
-                    % ----------------------------------
-                    %                     start = GetSecs;
-                    subjectResponse = gamepadObject.waitForResponse(obj.responseDur);
-                    if(~isnan(subjectResponse.responseTime))
-                        WaitSecs(obj.post_response_duration+(obj.responseDur-subjectResponse.responseTime));
-                    end
-                    %                     targetDisplayDur = GetSecs-start;
-                    
-                    % ------------------------------
-                    % Present: Post-response frame
-                    % ------------------------------
-                    ITI_start_time = GetSecs;
-                    background.draw(winPtr);
-                    Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
-                    
-                    
-                    % -------------------------
-                    % Post-Trial Processing
-                    % -------------------------
-                    obj.block.trials(currTrialNum).saveResponse(subjectResponse);              % save the response to the expt class structure
-                    obj.save_to_file(currTrialNum, false);
-                    curr_mean_accuracy  = nanmean([ obj.block.trials.accuracy  ]) * 100;        % calculate current mean accuracy
-                    curr_mean_RT        = nanmean([ obj.block.trials.RT ]) * 1000;              % calculate current mean response time
-                    ITI_dur             = obj.block.trials(currTrialNum).ITI;                   % figure out the ITI duration at the end of the trial
-                    
-                    fprintf('Trial Accuracy:     \t%-8.4f\t%%\n'	, obj.block.trials(currTrialNum).accuracy   * 100 );
-                    fprintf('Trial Response Time:\t%-8.4f\tms\n'	, obj.block.trials(currTrialNum).RT         * 1000);
-                    fprintf('\n');
-                    fprintf('Mean Accuracy:      \t%-8.4f\t%%\n'	, curr_mean_accuracy                        );
-                    fprintf('Mean Response Time: \t%-8.4f\tms\n'	, curr_mean_RT                              );
-                    fprintf('\n');
-                    %                     fprintf('Target Display SOA:\t %1.4f\t ms\n'          , targDisplaySOA                            * 1000);
-                    %                     fprintf('Target Display Duration: %1.4f\t ms\n\n'     , targetDisplayDur                          * 1000);
-                    fprintf('-------------------------------------------------\n');
+                    %                     % -------------------------
+                    %                     % Execute Single Trial
+                    %                     % -------------------------
+                    %                     obj.block.trials(currTrialNum).trial_order_num  = currTrialNum;  % save trial order number to data object
+                    %                     stim_search                                     = obj.block.trials(currTrialNum).searchStimuli;
+                    %                     %                     if(daqCard.isPresent); daqCard.resetPorts(); end
+                    %
+                    %                     ITI_processing_time     = (GetSecs-ITI_start_time);
+                    %                     leftover_ITI_dur        = ITI_dur -ITI_processing_time;
+                    %                     WaitSecs(leftover_ITI_dur);
+                    %                     fprintf('Nominal ITI Duration:\t%-8.4f\tms\n'       , ITI_dur               *1000);
+                    %                     fprintf('Actual  ITI Duration:\t%-8.4f\tms\n'       , (GetSecs-ITI_start_time)*1000);
+                    %                     fprintf('=================================================\n');
+                    %                     fprintf('Current trial Num:\t%3d / %3d\t trials\n'  , currTrialNum, numTrials);
+                    %                     fprintf('\n');
+                    %
+                    %
+                    %                     % -------------------------
+                    %                     % Present: Pre-trial frame
+                    %                     % -------------------------
+                    %                     background.draw(winPtr);
+                    %                     fixation.draw(winPtr);
+                    %                     Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
+                    %                     WaitSecs(obj.pre_trial_duration);                                       % wait:
+                    %                     %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
+                    %
+                    %
+                    %                     % ----------------------------------
+                    %                     % Present: Search frame
+                    %                     % ----------------------------------
+                    %                     %                     start = GetSecs;
+                    %                     background.draw(winPtr);
+                    %                     fixation.draw(winPtr);
+                    %                     stim_search.draw(winPtr, screenCenter_pt);
+                    %                     Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
+                    %                     %                     daqCard.sendEventCode(target_eventCode);                                % send event code
+                    %                     %                     targDisplaySOA = GetSecs-start;
+                    %
+                    %
+                    %                     % ----------------------------------
+                    %                     % Subj Response
+                    %                     % ----------------------------------
+                    %                     %                     start = GetSecs;
+                    %                     subjectResponse = gamepadObject.waitForResponse(obj.responseDur);
+                    %                     if(~isnan(subjectResponse.responseTime))
+                    %                         WaitSecs(obj.post_response_duration+(obj.responseDur-subjectResponse.responseTime));
+                    %                     end
+                    %                     %                     targetDisplayDur = GetSecs-start;
+                    %
+                    %                     % ------------------------------
+                    %                     % Present: Post-response frame
+                    %                     % ------------------------------
+                    %                     ITI_start_time = GetSecs;
+                    %                     background.draw(winPtr);
+                    %                     Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
+                    %
+                    %
+                    %                     % -------------------------
+                    %                     % Post-Trial Processing
+                    %                     % -------------------------
+                    %                     obj.block.trials(currTrialNum).saveResponse(subjectResponse);              % save the response to the expt class structure
+                    %                     obj.save_to_file(currTrialNum, false);
+                    %                     curr_mean_accuracy  = nanmean([ obj.block.trials.accuracy  ]) * 100;        % calculate current mean accuracy
+                    %                     curr_mean_RT        = nanmean([ obj.block.trials.RT ]) * 1000;              % calculate current mean response time
+                    %                     ITI_dur             = obj.block.trials(currTrialNum).ITI;                   % figure out the ITI duration at the end of the trial
+                    %
+                    %                     fprintf('Trial Accuracy:     \t%-8.4f\t%%\n'	, obj.block.trials(currTrialNum).accuracy   * 100 );
+                    %                     fprintf('Trial Response Time:\t%-8.4f\tms\n'	, obj.block.trials(currTrialNum).RT         * 1000);
+                    %                     fprintf('\n');
+                    %                     fprintf('Mean Accuracy:      \t%-8.4f\t%%\n'	, curr_mean_accuracy                        );
+                    %                     fprintf('Mean Response Time: \t%-8.4f\tms\n'	, curr_mean_RT                              );
+                    %                     fprintf('\n');
+                    %                     %                     fprintf('Target Display SOA:\t %1.4f\t ms\n'          , targDisplaySOA                            * 1000);
+                    %                     %                     fprintf('Target Display Duration: %1.4f\t ms\n\n'     , targetDisplayDur                          * 1000);
+                    %                     fprintf('-------------------------------------------------\n');
                     
                     
                     % -------------------------

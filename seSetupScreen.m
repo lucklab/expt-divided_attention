@@ -11,6 +11,8 @@ function [mainWindowPtr, mainWindowRect, centerPt] = seSetupScreen(bgcolor)
 %   or you want to query or set the properties of  display
 %   (e.g., framerate, size, colour depth or gamma tables), use the screen numbers 1 to n.
 
+% Screen('Preference', 'SkipSyncTests', 1);
+
 % global expt
 expt.screen.mainScreenNum   = max(Screen('Screens'));   % finds display to present
 expt.screen.pixelSize       = 32;                       % 32 bits per pixel
