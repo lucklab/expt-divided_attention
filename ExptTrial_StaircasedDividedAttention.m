@@ -8,7 +8,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
         % Experimentor Defined Variables
         subject_ID          = 'Z99';
         trial_order_num     = 99;
-        trial_type          = 'simultaneous';
+        trial_type          = 'sequential';
         %         run_order_num       = 1;
         %         setSize             = 8;
         %         targetPresence      = 'present';
@@ -92,7 +92,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
         end % constructor method
         
         
-        function run(obj, winPtr, background, fixation)
+        function run(obj, winPtr, background, fixation, luminance_contrast)
             % -------------------------
             % Execute Single Trial
             % -------------------------
@@ -119,6 +119,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             WaitSecs(1);                                       % wait:
             %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
             
+            fontColor = seColor2RGB('gray50')*luminance_contrast;
             
             letter_array = {'a','b','c'};
             number_array = {'1','2','3'};
@@ -129,22 +130,46 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             switch obj.trial_type
                 case 'simultaneous'
                     % ----------------------------------
-                    % Present: Search frame
+                    % Present: Simultaneous frame
                     % ----------------------------------
                     %                     start = GetSecs;
                     background.draw(winPtr);
-                    fixation.draw(winPtr);
-                    DrawFormattedText(winPtr, letter_stim{1}, 'center', 'center',seColor2RGB('black'),5,0,0,2);
-                    DrawFormattedText(winPtr, letter_stim{2}, 'center', 'center',seColor2RGB('black'),5,0,0,2);
-                    DrawFormattedText(winPtr, number_stim{1}, 'center', 'center',seColor2RGB('black'),5,0,0,2);
-                    DrawFormattedText(winPtr, number_stim{2}, 'center', 'center',seColor2RGB('black'),5,0,0,2);
+%                     fixation.draw(winPtr);
+                    DrawFormattedText(winPtr, letter_stim{1} ...
+                        , 'center', 700, fontColor,5,0,0,2);
+                    DrawFormattedText(winPtr, letter_stim{2} ...
+                        , 850,      600, fontColor,5,0,0,2);
+                    DrawFormattedText(winPtr, number_stim{1} ...
+                        , 'center', 500, fontColor,5,0,0,2);
+                    DrawFormattedText(winPtr, number_stim{2} ...
+                        , 1050,     600, fontColor,5,0,0,2);
                     Screen('Flip', winPtr);
 
-                    WaitSecs(3)
+                    WaitSecs(4);
 
                     
                 case 'sequential'
+                    % ----------------------------------
+                    % Present: Simultaneous frame
+                    % ----------------------------------
+                    %                     start = GetSecs;
+                    background.draw(winPtr);
+                    %                     fixation.draw(winPtr);
+                    DrawFormattedText(winPtr, letter_stim{1} ...
+                        , 'center', 700, fontColor,5,0,0,2);
+
+                    DrawFormattedText(winPtr, number_stim{1} ...
+                        , 'center', 500, fontColor,5,0,0,2);
+                    Screen('Flip', winPtr);
+                    WaitSecs(2);
                     
+                    DrawFormattedText(winPtr, letter_stim{2} ...
+                        , 850,      600, fontColor,5,0,0,2);
+                    DrawFormattedText(winPtr, number_stim{2} ...
+                        , 1050,     600, fontColor,5,0,0,2);
+                    Screen('Flip', winPtr);
+                    
+                    WaitSecs(2);
                 otherwise
                     error('trial type');
                     % do nothing
@@ -212,15 +237,15 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                 fixation                            = stimFixationPt(screenCenter_pt);                              % setup fixation stim
 
                 % Font
-                fontName     = 'Helvetica';  % font name for instructions
+                fontName     = 'Monaco';  % font name for instructions
                 fontSize     = 50;           % font size for all instructions
-                fontColorWd  = 'black';      % fonct color for all instructions
-                fontWrap     = 45;           % number of characters to wrap at
+%                 fontColorWd  = 'black';      % fonct color for all instructions
+%                 fontWrap     = 45;           % number of characters to wrap at
                 Screen('TextFont', winPtr, fontName);                                       % setup text font
                 Screen('TextSize', winPtr, fontSize);                                       % setup text size
 
                 
-                obj.run(winPtr, background, fixation);
+                obj.run(winPtr, background, fixation, 1.5);
                 
                 
                 ShowCursor;
