@@ -21,6 +21,7 @@ ISItested = 10.^questOutput;
   
 
 %% after trial, tell quest what you actually tested (in case you didnt like what it recommended) and how it went
+trialAcc = 1;
 qStruct = QuestUpdate(qStruct,log10(ISItested),trialAcc); %report what we did
                
 

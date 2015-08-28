@@ -18,7 +18,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
         
         % INPUT:
         ITI_range               = [1.000, 1.250];
-        num_trial_copies        = 1;
+        num_trial_copies        = 10;
         
         % Factors
         block_type              = 'sequential'; % 'simultaneous'
@@ -36,7 +36,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
     
     methods
         
-        function obj = visualSearch_statLearning_block(varargin)
+        function obj = ExptBlock_StaircasedDividedAttention(varargin)
             % constructor method for TRIALBLOCK obj
             %  obj = visualSearch_statLearning_block(cueColorList, targColorList, target_presence_list)
             
@@ -81,11 +81,11 @@ classdef ExptBlock_StaircasedDividedAttention < handle
             %   if trial multiplier is zero (default) then doesn't      %
             %   generate a trial array                                  %
             % --------------------------------------------------------- %
-            obj.trials   = ExptTrial_ExptStaircasedDividedAttention.empty();          % cell array for SINGLETRIAL objs
+            obj.trials   = ExptTrial_StaircasedDividedAttention.empty();          % cell array for SINGLETRIAL objs
             trialNum     = 1;                    % reset trial count
             
             for num_trial_copiesIndex = 1:obj.num_trial_copies
-                unique_ID                   = 11;                   % reset the unique trial ID number (for ERPSS event codes)
+%                 unique_ID                   = 11;                   % reset the unique trial ID number (for ERPSS event codes)
                 
                 % -------------------- %
                 % Generate Base Trials %
@@ -94,18 +94,12 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                 
                 
                 % create new single trial
-%                 obj.trials(trialNum) = visualSearch_statLearning_trial  ...
-%                     ( obj.subject_ID                    ...
-%                     , obj.run_order_num                 ...
-%                     , unique_ID                         ...
-%                     , obj.ITI_range                     ...
-%                     , obj.searchAnnulusRadius             ...
-%                     );
+                obj.trials(trialNum)     = ExptTrial_StaircasedDividedAttention();
                 trialNum                 = trialNum+1;                          % increment trial num
                 
                 
-                unique_ID                = unique_ID+1;                         % increment unique trial ID
-                if(mod(trialNum, 10) == 0); fprintf('%d...', trialNum); end;    % display current status
+%                 unique_ID                = unique_ID+1;                         % increment unique trial ID
+%                 if(mod(trialNum, 10) == 0); fprintf('%d...', trialNum); end;    % display current status
                 
 
             end                 % trial multiplier loop
@@ -159,7 +153,44 @@ classdef ExptBlock_StaircasedDividedAttention < handle
         
         end % function
         
-        
+        function testRun(obj)
+            
+            try
+                
+                bgColorWd = 'white';
+                clc; HideCursor;
+                [ winPtr, ~, screenCenter_pt ]      = seSetupScreen(seColor2RGB(bgColorWd));  % setup screen
+                background                          = stimBackground(bgColorWd);                                % setup background stim
+                fixation                            = stimFixationPt(screenCenter_pt);                              % setup fixation stim
+                
+                % Font
+                fontName     = 'Monaco';  % font name for instructions
+                fontSize     = 50;           % font size for all instructions
+                %                 fontColorWd  = 'black';      % fonct color for all instructions
+                %                 fontWrap     = 45;           % number of characters to wrap at
+                Screen('TextFont', winPtr, fontName);                                       % setup text font
+                Screen('TextSize', winPtr, fontSize);                                       % setup text size
+                
+                
+                
+                for iTrial = 1:length(obj.trials)
+                
+                    obj.trials(iTrial).run(winPtr, background, fixation, iTrial*0.2);
+                
+                    WaitSecs(2);
+                end
+                
+                ShowCursor;
+                Screen('CloseAll');                             % close psychtoolbox screen
+                
+            catch err 
+                ShowCursor;
+                Screen('CloseAll');                             % close psychtoolbox screen
+                rethrow(err);
+            end
+            
+            
+        end % function
         
     end % methods
     
