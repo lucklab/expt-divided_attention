@@ -122,7 +122,10 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             
 %             fontColor = seColor2RGB('gray50')*luminance_contrast;
             
-            letter_array = {'a','b','c'};
+            letter_array = upper(...
+                { 'a','b','c','d','e','f','g','h','i','j','k'...
+                , 'l','m','n','o','p','q','r','s','t','u','v'...
+                , 'w','x','y','z'});
             number_array = {'1','2','3'};
             
             obj.letter_stim = randsample(letter_array, 2);

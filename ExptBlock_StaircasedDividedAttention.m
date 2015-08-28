@@ -157,7 +157,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
             
             try
                 %% Setup QUEST
-                tGuess      = log10(50);    % log of estimated threshold -  time for peripheral accuracy
+                tGuess      = log10(25);    % log of estimated threshold -  time for peripheral accuracy
                 tGuessSd    = log10(3);     % standard deviation
                 pThreshold  = 0.75;         % performance will converage at this
                 beta        = 3.5;          % steepness of the Weibull function, typically 3

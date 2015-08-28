@@ -6,7 +6,10 @@ classdef seKeyboard < handle
     properties
         isPresent = true;                          % Flag specifying if a gamepad device is connected or disconnected
         
-        acceptedResponses = { 'a','b','c'} ;                  % (num) accepted gamepad-button numbers
+        acceptedResponses = ...
+            { 'a','b','c','d','e','f','g','h','i','j','k'...
+            , 'l','m','n','o','p','q','r','s','t','u','v'...
+            , 'w','x','y','z'} ;                  % (num) accepted gamepad-button numbers
     end
     
     properties(Hidden = true)
@@ -17,7 +20,7 @@ classdef seKeyboard < handle
     end
     
     properties(Constant = true, Hidden = true)
-        DEFAULT_WAIT_DURATION   = 5.000;      % (secs) Default duration to wait for a subject response
+        DEFAULT_WAIT_DURATION   = 100.000;      % (secs) Default duration to wait for a subject response
         EVENT_CODE_PAUSE        = 255;
         EVENT_CODE_END          = 255;
         
