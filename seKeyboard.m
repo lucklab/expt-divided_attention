@@ -64,18 +64,18 @@ classdef seKeyboard < handle
             
             
             % Check computer for gamepad
-            if ismac
-                obj.gamepadIndex = GetGamepadIndices;
-            elseif ispc
-                obj.gamepadIndex = 0;
-            end
+            %             if ismac
+            %                 obj.gamepadIndex = GetGamepadIndices;
+            %             elseif ispc
+            %                 obj.gamepadIndex = 0;
+            %             end
             
             
-            if(~isempty(obj.gamepadIndex))
-                obj.isPresent = true;
-            else
-                obj.isPresent = false;
-            end
+            %             if(~isempty(obj.gamepadIndex))
+            %                 obj.isPresent = true;
+            %             else
+            %                 obj.isPresent = false;
+            %             end
             
         end
         
@@ -125,14 +125,14 @@ classdef seKeyboard < handle
                         % ------------------------------- %
                         
                         if ismac
-                            [keyIsDown, keyIsDownTimeStamp, keyCode]    = KbCheck(obj.gamepadIndex);
+                            [keyIsDown, keyIsDownTimeStamp, keyCode]    = KbCheck();
                         elseif ispc
-                            [~,~,~,btn] = WinJoystickMex(obj.gamepadIndex);
-                            keyIsDownTimeStamp  = GetSecs();
-                            keyCode             = find(btn, 1);
-                            keyIsDown           = ~isempty(keyCode);
+                            %                             [~,~,~,btn] = WinJoystickMex(obj.gamepadIndex);
+                            %                             keyIsDownTimeStamp  = GetSecs();
+                            %                             keyCode             = find(btn, 1);
+                            %                             keyIsDown           = ~isempty(keyCode);
                         end
-                        [KEYBOARD_keyIsDown, ~,KEYBOARD_keyCode]                  = KbCheck();
+                        %                         [KEYBOARD_keyIsDown, ~,KEYBOARD_keyCode]         = KbCheck();
                         
                         
                         % ---------------------------- %

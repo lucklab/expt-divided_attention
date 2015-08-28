@@ -21,7 +21,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
         num_trial_copies        = 10;
         
         % Factors
-        block_type              = 'sequential'; % 'simultaneous'
+        block_type              = 'simultaneous'; % 'simultaneous'
         
         
         % Non-factors
