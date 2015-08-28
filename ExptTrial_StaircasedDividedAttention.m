@@ -46,6 +46,8 @@ classdef ExptTrial_StaircasedDividedAttention < handle
         function obj   = ExptTrial_StaircasedDividedAttention(varargin)
             
             switch nargin
+                case 0
+                    
                 case 1
                     obj.trial_type                  = varargin{1};
                     
@@ -135,7 +137,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     % ----------------------------------
                     %                     start = GetSecs;
                     background.draw(winPtr);
-%                     fixation.draw(winPtr);
+                    fixation.draw(winPtr);
                     DrawFormattedText(winPtr, obj.letter_stim{1} ...
                         , 'center', 700, fontColor,5,0,0,2);
                     DrawFormattedText(winPtr, obj.letter_stim{2} ...
@@ -155,7 +157,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     % ----------------------------------
                     %                     start = GetSecs;
                     background.draw(winPtr);
-                    %                     fixation.draw(winPtr);
+                    fixation.draw(winPtr);
                     DrawFormattedText(winPtr, obj.letter_stim{1} ...
                         , 'center', 700, fontColor,5,0,0,2);
 
@@ -241,7 +243,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             
             try
                 
-                bgColorWd = 'white';
+                bgColorWd = 'black';
                 clc; HideCursor;
                 [ winPtr, ~, screenCenter_pt ]      = seSetupScreen(seColor2RGB(bgColorWd));  % setup screen
                 background                          = stimBackground(bgColorWd);                                % setup background stim
@@ -256,7 +258,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                 Screen('TextSize', winPtr, fontSize);                                       % setup text size
 
                 
-                obj.run(winPtr, background, fixation, 1.5);
+                obj.run(winPtr, background, fixation, seColor2RGB('white'));
                 
                 
                 ShowCursor;

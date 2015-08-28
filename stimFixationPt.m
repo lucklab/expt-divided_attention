@@ -25,19 +25,21 @@ methods
                 obj.size_px     = 10;
                 obj.penWidth_px = 5;
                 obj.location_pt = [400, 300];
-                obj.color_wd    = 'black';
-                obj.bgColor_wd  = 'white';
+                obj.color_wd    = 'white';
+                obj.bgColor_wd  = 'black';
             case 1
                 
                 obj = stimFixationPt();
                 obj.location_pt = varargin{1};
+                obj.color_wd    = 'white';
+                obj.bgColor_wd  = 'black';
                 
             case 4
                 obj.size_px     = varargin{1};
                 obj.penWidth_px = varargin{2};
                 obj.location_pt = varargin{3};
                 obj.color_wd    = varargin{4};
-                            case 5
+            case 5
                 obj.size_px     = varargin{1};
                 obj.penWidth_px = varargin{2};
                 obj.location_pt = varargin{3};
