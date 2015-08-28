@@ -8,7 +8,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
         % Experimentor Defined Variables
         subject_ID          = 'Z99';
         trial_order_num     = 99;
-        trial_type          = 'sequential';
+        trial_type          = 'simultaneous';
         %         run_order_num       = 1;
         %         setSize             = 8;
         %         targetPresence      = 'present';
@@ -43,36 +43,33 @@ classdef ExptTrial_StaircasedDividedAttention < handle
     
     methods
         
-        function obj   = visualSearch_statLearning_trial(varargin)
+        function obj   = ExptTrial_StaircasedDividedAttention(varargin)
             
             switch nargin
-                case 0
-                    
+                case 1
+                    obj.trial_type                  = varargin{1};
                     
                 case 9
                     
-                    obj.subject_ID                  = varargin{1};
-                    obj.run_order_num               = varargin{2};
-                    obj.event_code                  = varargin{3};
-                    obj.setSize                     = varargin{4};
-                    obj.targetPresence              = varargin{5};
-                    obj.targetLocation              = varargin{6};
-                    obj.targetOrientation           = varargin{7};
-                    obj.ITI_range                   = varargin{8};
-                    obj.search_annulus_radius       = varargin{9};
+%                     obj.subject_ID                  = varargin{1};
+%                     obj.run_order_num               = varargin{2};
+%                     obj.event_code                  = varargin{3};
+%                   
+%                     obj.ITI_range                   = varargin{8};
+%                     obj.search_annulus_radius       = varargin{9};
                     
                 otherwise
                     error('Wrong number of input arguments');
             end
             
-            obj.searchStimuli                 = stimLandoltCArray.empty;
+%             obj.searchStimuli                 = stimLandoltCArray.empty;
             
             
             %% Randomly calculate inter-trial interval
             %  based min & max ITI-range
-            obj.ITI  = min(obj.ITI_range)  ...
-                + (rand * (max(obj.ITI_range)-min(obj.ITI_range)));
-            
+%             obj.ITI  = min(obj.ITI_range)  ...
+%                 + (rand * (max(obj.ITI_range)-min(obj.ITI_range)));
+%             
             %% Set up stimulus objects
             
             %             obj.searchStimuli = stimLandoltCArray(obj.setSize, obj.search_annulus_radius, obj.targetLocation, obj.targetOrientation, obj.objectColor); % , -7*pi/obj.setSize);

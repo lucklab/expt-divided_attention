@@ -21,7 +21,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
         num_trial_copies        = 10;
         
         % Factors
-        block_type              = 'simultaneous'; % 'simultaneous'
+        block_type              = 'simultaneous'
         
         
         % Non-factors
@@ -94,7 +94,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                 
                 
                 % create new single trial
-                obj.trials(trialNum)     = ExptTrial_StaircasedDividedAttention();
+                obj.trials(trialNum)     = ExptTrial_StaircasedDividedAttention(obj.block_type);
                 trialNum                 = trialNum+1;                          % increment trial num
                 
                 
@@ -157,7 +157,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
             
             try
                 %% Setup QUEST
-                tGuess      = log10(25);    % log of estimated threshold -  time for peripheral accuracy
+                tGuess      = log10(12);    % log of estimated threshold -  time for peripheral accuracy
                 tGuessSd    = log10(3);     % standard deviation
                 pThreshold  = 0.75;         % performance will converage at this
                 beta        = 3.5;          % steepness of the Weibull function, typically 3

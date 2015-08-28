@@ -10,6 +10,7 @@ properties
     penWidth_px;
     location_pt;
     color_wd;
+    bgColor_wd; 
 
 end % properties
 
@@ -25,6 +26,7 @@ methods
                 obj.penWidth_px = 5;
                 obj.location_pt = [400, 300];
                 obj.color_wd    = 'black';
+                obj.bgColor_wd  = 'white';
             case 1
                 
                 obj = stimFixationPt();
@@ -35,6 +37,12 @@ methods
                 obj.penWidth_px = varargin{2};
                 obj.location_pt = varargin{3};
                 obj.color_wd    = varargin{4};
+                            case 5
+                obj.size_px     = varargin{1};
+                obj.penWidth_px = varargin{2};
+                obj.location_pt = varargin{3};
+                obj.color_wd    = varargin{4};
+                obj.bgColor_wd  = varargin{5};
             otherwise
                 error('Wrong number of input arguments');
                                
@@ -54,9 +62,29 @@ methods
         right       = obj.location_pt(X) + obj.size_px;
 
         color_rgb   = seColor2RGB(obj.color_wd);
+        bgColor_rgb = seColor2RGB(obj.bgColor_wd);
         
-        Screen('DrawLine', winPtr, color_rgb, left,                obj.location_pt(Y),  right,              obj.location_pt(Y),  obj.penWidth_px);
-        Screen('DrawLine', winPtr, color_rgb, obj.location_pt(X),   top,                obj.location_pt(X),  btm,                obj.penWidth_px);
+
+        Screen('DrawDots', winPtr ...
+            , [obj.location_pt(X); obj.location_pt(Y)] ...
+            , 2*obj.size_px ...
+            , color_rgb ...
+            , [0 0] ...
+            , 2) % dot type 2 = circles w/ high-quality anti-aliasing
+        Screen('DrawLine', winPtr ...
+            , bgColor_rgb ...
+            , left, obj.location_pt(Y), right, obj.location_pt(Y) ...
+            ,  obj.penWidth_px);
+        Screen('DrawLine', winPtr ...
+            , bgColor_rgb ...
+            , obj.location_pt(X), top, obj.location_pt(X),  btm ...
+            , obj.penWidth_px);
+        Screen('DrawDots', winPtr ...
+            , [obj.location_pt(X); obj.location_pt(Y)] ...
+            , obj.penWidth_px  ...
+            , color_rgb ...
+            , [0 0] ...
+            , 2) % dot type 2 = circles w/ high-quality anti-aliasing
 
     end
    
@@ -64,7 +92,8 @@ methods
             
             try
 
-                [winPtr, winRect, centerPt] = setupScreen(color2RGB('white')); %#ok<ASGLU>
+                bgColor_wd = 'white';
+                [winPtr, winRect, centerPt] = seSetupScreen(seColor2RGB(bgColor_wd)); %#ok<ASGLU>
                 Priority(MaxPriority(winPtr));
               
                 obj.location_pt = centerPt;    % set location to be center of screen
