@@ -156,8 +156,21 @@ classdef ExptBlock_StaircasedDividedAttention < handle
         function testRun(obj)
             
             try
+                %% Setup QUEST
+                tGuess      = log10(50);    % log of estimated threshold -  time for peripheral accuracy
+                tGuessSd    = log10(3);     % standard deviation
+                pThreshold  = 0.75;         % performance will converage at this
+                beta        = 3.5;          % steepness of the Weibull function, typically 3
+                delta       = 0.01;         % fraction of trials observer presses blindly
+                gamma       = 0.5;          % fraction of trials generate response 1 when intensity = -inf
+                %grain = 0.01;
+                %range = 5; % tGuess+(-range/2:grain:range/2)
                 
-                bgColorWd = 'white';
+                qStruct = QuestCreate(tGuess,tGuessSd,pThreshold,beta,delta,gamma); %range and grain default
+ 
+                
+                %% Setup trial
+                bgColorWd = 'black';
                 clc; HideCursor;
                 [ winPtr, ~, screenCenter_pt ]      = seSetupScreen(seColor2RGB(bgColorWd));  % setup screen
                 background                          = stimBackground(bgColorWd);                                % setup background stim
@@ -174,9 +187,25 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                 
                 
                 for iTrial = 1:length(obj.trials)
+                    %% to determine current trial test value, ask quest what you should test
+                    questOutput = QuestQuantile(qStruct);	% Recommended by Pelli (1987), and still our favorite.
+                    luminanceContrastTested = 10.^questOutput;
+                    display(luminanceContrastTested);
+                    
+                    stimColor = abs(seColor2RGB(bgColorWd) - luminanceContrastTested);
+                    display(stimColor);
+                    
+                    %% execute trial
+                    obj.trials(iTrial).run(winPtr, background, fixation, stimColor);
                 
-                    obj.trials(iTrial).run(winPtr, background, fixation, iTrial*0.2);
-                
+                    %% update Quest
+                    display(obj.trials(iTrial).accuracy);
+                    qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
+                        obj.trials(iTrial).accuracy(1)); %report what we did
+                    
+                    qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
+                        obj.trials(iTrial).accuracy(2)); %report what we did
+                    
                     WaitSecs(2);
                 end
                 

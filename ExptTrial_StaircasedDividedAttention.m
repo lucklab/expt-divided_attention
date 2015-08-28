@@ -17,7 +17,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
         %         objectColor         = 'magenta';
         ITI;
         
-        accuracy            = NaN;            % subject's single trial accuracy {1 == correct || 0 == incorrect}
+        accuracy            = [];            % subject's single trial accuracy {1 == correct || 0 == incorrect}
         resp_keycode        = 'noResponse';   % response gamepad key number
         RT;                                   % subject's single trial response time
         
@@ -27,7 +27,8 @@ classdef ExptTrial_StaircasedDividedAttention < handle
     
     properties (Hidden = true)
         event_code;
-        searchStimuli;                    % Search stimulus to draw
+        letter_stim;                    % Search stimulus to draw
+        number_stim;
         
         search_annulus_radius   = 200;
         ITI_range               = [.250 .500];
@@ -92,7 +93,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
         end % constructor method
         
         
-        function run(obj, winPtr, background, fixation, luminance_contrast)
+        function run(obj, winPtr, background, fixation, fontColor)
             % -------------------------
             % Execute Single Trial
             % -------------------------
@@ -108,7 +109,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             %             fprintf('=================================================\n');
             %             fprintf('Current trial Num:\t%3d / %3d\t trials\n'  , currTrialNum, numTrials);
             %             fprintf('\n');
-            
+            keyboard = seKeyboard();
             
             % -------------------------
             % Present: Pre-trial frame
@@ -119,13 +120,13 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             WaitSecs(1);                                       % wait:
             %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
             
-            fontColor = seColor2RGB('gray50')*luminance_contrast;
+%             fontColor = seColor2RGB('gray50')*luminance_contrast;
             
             letter_array = {'a','b','c'};
             number_array = {'1','2','3'};
             
-            letter_stim = randsample(letter_array, 2);
-            number_stim = randsample(number_array, 2);
+            obj.letter_stim = randsample(letter_array, 2);
+            obj.number_stim = randsample(number_array, 2);
             
             switch obj.trial_type
                 case 'simultaneous'
@@ -135,17 +136,17 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     %                     start = GetSecs;
                     background.draw(winPtr);
 %                     fixation.draw(winPtr);
-                    DrawFormattedText(winPtr, letter_stim{1} ...
+                    DrawFormattedText(winPtr, obj.letter_stim{1} ...
                         , 'center', 700, fontColor,5,0,0,2);
-                    DrawFormattedText(winPtr, letter_stim{2} ...
+                    DrawFormattedText(winPtr, obj.letter_stim{2} ...
                         , 850,      600, fontColor,5,0,0,2);
-                    DrawFormattedText(winPtr, number_stim{1} ...
+                    DrawFormattedText(winPtr, obj.number_stim{1} ...
                         , 'center', 500, fontColor,5,0,0,2);
-                    DrawFormattedText(winPtr, number_stim{2} ...
+                    DrawFormattedText(winPtr, obj.number_stim{2} ...
                         , 1050,     600, fontColor,5,0,0,2);
                     Screen('Flip', winPtr);
 
-                    WaitSecs(4);
+                    WaitSecs(0.100);
 
                     
                 case 'sequential'
@@ -155,41 +156,51 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     %                     start = GetSecs;
                     background.draw(winPtr);
                     %                     fixation.draw(winPtr);
-                    DrawFormattedText(winPtr, letter_stim{1} ...
+                    DrawFormattedText(winPtr, obj.letter_stim{1} ...
                         , 'center', 700, fontColor,5,0,0,2);
 
-                    DrawFormattedText(winPtr, number_stim{1} ...
+                    DrawFormattedText(winPtr, obj.number_stim{1} ...
                         , 'center', 500, fontColor,5,0,0,2);
                     Screen('Flip', winPtr);
-                    WaitSecs(2);
+                    WaitSecs(0.050);
                     
-                    DrawFormattedText(winPtr, letter_stim{2} ...
+                    background.draw(winPtr);
+                    fixation.draw(winPtr);
+                    Screen('Flip', winPtr);
+                    WaitSecs(0.800);
+                    
+                    DrawFormattedText(winPtr, obj.letter_stim{2} ...
                         , 850,      600, fontColor,5,0,0,2);
-                    DrawFormattedText(winPtr, number_stim{2} ...
+                    DrawFormattedText(winPtr, obj.number_stim{2} ...
                         , 1050,     600, fontColor,5,0,0,2);
                     Screen('Flip', winPtr);
+                    WaitSecs(0.050);
                     
-                    WaitSecs(2);
                 otherwise
                     error('trial type');
                     % do nothing
             end % switch
-            % ----------------------------------
-            % Present: Search frame
-            % ----------------------------------
-            %                     start = GetSecs;
-            %             background.draw(winPtr);
-            %             fixation.draw(winPtr);
-            %             stim_search.draw(winPtr, screenCenter_pt);
-            %             Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
-            %                     daqCard.sendEventCode(target_eventCode);                                % send event code
-            %                     targDisplaySOA = GetSecs-start;
-            
+           
             
             % ----------------------------------
             % Subj Response
             % ----------------------------------
             %                     start = GetSecs;
+            DrawFormattedText(winPtr, '?', 'center', 'center', seColor2RGB('white'), 5,0,0,2);
+            Screen('Flip', winPtr);
+            subjectResponse_01 = keyboard.waitForResponse();
+            obj.saveResponse(subjectResponse_01);              % save the response to the expt class structure
+            % UPDATE QUEST
+            
+            WaitSecs(0.500);
+            
+            DrawFormattedText(winPtr, '??', 'center', 'center', seColor2RGB('white'), 5,0,0,2);
+            Screen('Flip', winPtr);
+            subjectResponse_02 = keyboard.waitForResponse();
+            obj.saveResponse(subjectResponse_02);              % save the response to the expt class structure
+            % UPDATE QUEST
+            
+            
             %             subjectResponse = gamepadObject.waitForResponse(obj.responseDur);
             %             if(~isnan(subjectResponse.responseTime))
             %                 WaitSecs(obj.post_response_duration+(obj.responseDur-subjectResponse.responseTime));
@@ -207,7 +218,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             % -------------------------
             % Post-Trial Processing
             % -------------------------
-            %             obj.block.trials(currTrialNum).saveResponse(subjectResponse);              % save the response to the expt class structure
+            %             obj.saveResponse(subjectResponse);              % save the response to the expt class structure
             %             obj.save_to_file(currTrialNum, false);
             %             curr_mean_accuracy  = nanmean([ obj.block.trials.accuracy  ]) * 100;        % calculate current mean accuracy
             %             curr_mean_RT        = nanmean([ obj.block.trials.RT ]) * 1000;              % calculate current mean response time
@@ -251,10 +262,10 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                 ShowCursor;
                 Screen('CloseAll');                             % close psychtoolbox screen
 
-            catch
+            catch err
                 ShowCursor;
                 Screen('CloseAll');                             % close psychtoolbox screen
-                                
+                rethrow(err);
             end
             
         end % function
@@ -266,11 +277,12 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             trialObj.RT              = subjectResponse.responseTime;                  % subject's single trial response time
             
             % Calculate accuracy
-            if( ~isnan(trialObj.resp_keycode) && ...
-                    strcmpi(trialObj.responseKeyMap(trialObj.resp_keycode), trialObj.targetOrientation))
-                trialObj.accuracy = true;
+            if( ismember( ...
+                    trialObj.resp_keycode, ...
+                    trialObj.letter_stim))
+                trialObj.accuracy = [trialObj.accuracy true];
             else
-                trialObj.accuracy = false;
+                trialObj.accuracy = [trialObj.accuracy false];
             end
             
         end       % method

@@ -4,15 +4,15 @@ classdef seKeyboard < handle
     %   record subject's responses.
     
     properties
-        isPresent;                          % Flag specifying if a gamepad device is connected or disconnected
+        isPresent = true;                          % Flag specifying if a gamepad device is connected or disconnected
         
-        acceptedResponses;                  % (num) accepted gamepad-button numbers
+        acceptedResponses = { 'a','b','c'} ;                  % (num) accepted gamepad-button numbers
     end
     
     properties(Hidden = true)
         escape_keys     = zeros(1,256);     % Keyboard key combination to quit experiment
         pause_keys      = zeros(1,256);     % Keyboard key combination to pause experiment
-        gamepadIndex;                     % Psychtoolbox index for gamepad devices (need for KbCheck)
+%         gamepadIndex;                     % Psychtoolbox index for gamepad devices (need for KbCheck)
         
     end
     
@@ -38,11 +38,11 @@ classdef seKeyboard < handle
             
             switch nargin
                 case 0                                      % No inputs -- use default values
-                    if ismac
-                        obj.acceptedResponses   = 01:10;        % (num) Default accepted gamepad-button numbers
-                    elseif ispc
-                        obj.acceptedResponses   = 01:04;
-                    end
+                    %                     if ismac
+                    %                         obj.acceptedResponses   = 01:10;        % (num) Default accepted gamepad-button numbers
+                    %                     elseif ispc
+                    %                         obj.acceptedResponses   = 01:04;
+                    %                     end
                 case 1
                     obj.acceptedResponses   = varargin{1};
                     
@@ -138,21 +138,21 @@ classdef seKeyboard < handle
                         % ---------------------------- %
                         % check for quit or pause keys %
                         % ---------------------------- %
-                        if (KEYBOARD_keyIsDown && isequal(KEYBOARD_keyCode, obj.escape_keys))
-                            fprintf('Escape key-combination activated.\nProgram stopped.\n');
-                            
-                            opt_daq.sendEventCode(obj.EVENT_CODE_END);   % send out event codes if we have a daq var is inputted
-                            ShowCursor;
-                            Screen('CloseAll');         % close psychtoolbox
-                            return;                     % quit experiment
-                        elseif (KEYBOARD_keyIsDown && isequal(KEYBOARD_keyCode, obj.pause_keys))                  % pause experiment
-                            fprintf('Experiment paused.\nHit any key to continue...\n');
-                                                        
-                            opt_daq.sendEventCode(obj.EVENT_CODE_PAUSE);   % send out event codes if we have a daq var is inputted
-                            WaitSecs(1);
-                            KbWait;
-                            fprintf('Experiment Unpaused\n');
-                        end
+                        %                         if (KEYBOARD_keyIsDown && isequal(KEYBOARD_keyCode, obj.escape_keys))
+                        %                             fprintf('Escape key-combination activated.\nProgram stopped.\n');
+                        %
+                        %                             opt_daq.sendEventCode(obj.EVENT_CODE_END);   % send out event codes if we have a daq var is inputted
+                        %                             ShowCursor;
+                        %                             Screen('CloseAll');         % close psychtoolbox
+                        %                             return;                     % quit experiment
+                        %                         elseif (KEYBOARD_keyIsDown && isequal(KEYBOARD_keyCode, obj.pause_keys))                  % pause experiment
+                        %                             fprintf('Experiment paused.\nHit any key to continue...\n');
+                        %
+                        %                             opt_daq.sendEventCode(obj.EVENT_CODE_PAUSE);   % send out event codes if we have a daq var is inputted
+                        %                             WaitSecs(1);
+                        %                             KbWait;
+                        %                             fprintf('Experiment Unpaused\n');
+                        %                         end
                         
                         
                         if(keyIsDown)
@@ -160,7 +160,7 @@ classdef seKeyboard < handle
                             % ---------------------------- %
                             % Check for Accepted Responses %
                             % ---------------------------- %
-                            foundResponses = intersect(KbName(KbName(keyCode)), obj.acceptedResponses);
+                            foundResponses = intersect(KbName(keyCode), obj.acceptedResponses);
                             
                             if(~isempty(foundResponses))
                                                                 
