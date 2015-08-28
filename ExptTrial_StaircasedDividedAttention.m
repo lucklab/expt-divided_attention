@@ -282,7 +282,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             % Calculate accuracy
             if( ismember( ...
                     trialObj.resp_keycode, ...
-                    trialObj.letter_stim))
+                    lower(trialObj.letter_stim)))
                 trialObj.accuracy = [trialObj.accuracy true];
             else
                 trialObj.accuracy = [trialObj.accuracy false];
