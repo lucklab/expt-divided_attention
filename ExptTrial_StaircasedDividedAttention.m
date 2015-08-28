@@ -109,51 +109,49 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             %             fprintf('Current trial Num:\t%3d / %3d\t trials\n'  , currTrialNum, numTrials);
             %             fprintf('\n');
             keyboard = seKeyboard();
-            X = 1; Y = 2;
-            screenCenter_pt = fixation.location_pt;
-            top_location_pt = [screenCenter_pt(X), screenCenter_pt(Y)-100];
-            btm_location_pt = [screenCenter_pt(X), screenCenter_pt(Y)+100];
-            right_location_pt = [screenCenter_pt(X)+100, screenCenter_pt(Y)];
-            left_location_pt  = [screenCenter_pt(X)-100, screenCenter_pt(Y)];
+
                 
-            % -------------------------
-            % Present: Pre-trial frame
-            % -------------------------
+            %% Present: Pre-trial frame
+            background.draw(winPtr);
+            Screen('Flip', winPtr);        
+            WaitSecs(0.500);  
+            
             background.draw(winPtr);
             fixation.draw(winPtr);
-            Screen('Flip', winPtr);                                                 % flip/draw buffer to display monitor
-            WaitSecs(1);                                       % wait:
+            Screen('Flip', winPtr);        
+            WaitSecs(0.500);              
             %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
             
-            %             fontColor = seColor2RGB('gray50')*luminance_contrast;
             
-            
-            %% Choose letter stim
+            %% Choose character stimuli
             letter_array = upper(...
                 { 'a','b','c','d','e','f','g','h','i','j','k'...
                 , 'l','m','n','o','p','q','r','s','t','u','v'...
                 , 'w','x','y','z'});
-            number_array = {'1','2','3'};
+            number_array = {'1','2','3','4','5','6','7','8','9'};
             
             obj.letter_stim = randsample(letter_array, 2);
             obj.number_stim = randsample(number_array, 2);
             
             
-            %% Present character stim
-
-            charRect         = Screen('TextBounds', winPtr, ...
-                obj.letter_stim{1});
+            %% Calculate character locations
+            X = 1; Y = 2;
+            screenCenter_pt = fixation.location_pt;
+            charRect         = Screen('TextBounds', winPtr, 'A');
             charCenterOffset = 200;
             charHeightOffset = RectHeight(charRect)/2;
             charWidthOffset  = RectWidth(charRect)/2;
             
-            sy_center = screenCenter_pt(Y) - charHeightOffset;
-            sx_center = screenCenter_pt(X) - charWidthOffset;
+            sy_center     = screenCenter_pt(Y) - charHeightOffset;
+            sx_center     = screenCenter_pt(X) - charWidthOffset;
             sy_bottomChar = sy_center + charCenterOffset;
             sy_topChar    = sy_center - charCenterOffset;
             sx_rightChar  = sx_center + charCenterOffset;
             sx_leftChar   = sx_center - charCenterOffset;
             
+            
+            %% Present character stim
+
             background.draw(winPtr);
             fixation.draw(winPtr);
 
@@ -184,14 +182,11 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                         , fontColor,5,0,0,2);
                     
                     Screen('Flip', winPtr);                  
-                    WaitSecs(3);
+                    WaitSecs(.100);
 
                     
                 case 'sequential'
-                    % ----------------------------------
-                    % Present: Simultaneous frame
-                    % ----------------------------------
-                    %                     start = GetSecs;
+
                     background.draw(winPtr);
                     fixation.draw(winPtr);
                     % TOP character
@@ -207,6 +202,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     Screen('Flip', winPtr);
                     WaitSecs(0.050);
                     
+                    % Draw Blank ISI
                     background.draw(winPtr);
                     fixation.draw(winPtr);
                     Screen('Flip', winPtr);
@@ -297,27 +293,26 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                 fixation                            = stimFixationPt(screenCenter_pt);                              % setup fixation stim
 
                 % Font
-                fontName     = 'Monaco';  % font name for instructions
-                fontSize     = 50;           % font size for all instructions
-%                 fontColorWd  = 'black';      % fonct color for all instructions
-%                 fontWrap     = 45;           % number of characters to wrap at
-                Screen('TextFont', winPtr, fontName);                                       % setup text font
-                Screen('TextSize', winPtr, fontSize);                                       % setup text size
+                fontName     = 'Monaco';    % font name for instructions
+                fontSize     = 50;          % font size for all instructions
+                Screen('TextFont', winPtr, fontName);    % setup text font
+                Screen('TextSize', winPtr, fontSize);    % setup text size
 
                 
                 obj.run(winPtr, background, fixation, seColor2RGB('white'));
                 
                 
                 ShowCursor;
-                Screen('CloseAll');                             % close psychtoolbox screen
+                Screen('CloseAll');         % close psychtoolbox screen
 
             catch err
                 ShowCursor;
-                Screen('CloseAll');                             % close psychtoolbox screen
+                Screen('CloseAll');          % close psychtoolbox screen
                 rethrow(err);
             end
             
         end % function
+        
         
         function trialObj = saveResponse(trialObj, subjectResponse)
             
