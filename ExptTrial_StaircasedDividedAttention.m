@@ -8,7 +8,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
         % Experimentor Defined Variables
         subject_ID          = 'Z99';
         trial_order_num     = 99;
-        trial_type          = 'simultaneous';
+        trial_type          = 'sequential';
         %         run_order_num       = 1;
         %         setSize             = 8;
         %         targetPresence      = 'present';
@@ -109,7 +109,13 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             %             fprintf('Current trial Num:\t%3d / %3d\t trials\n'  , currTrialNum, numTrials);
             %             fprintf('\n');
             keyboard = seKeyboard();
-            
+            X = 1; Y = 2;
+            screenCenter_pt = fixation.location_pt;
+            top_location_pt = [screenCenter_pt(X), screenCenter_pt(Y)-100];
+            btm_location_pt = [screenCenter_pt(X), screenCenter_pt(Y)+100];
+            right_location_pt = [screenCenter_pt(X)+100, screenCenter_pt(Y)];
+            left_location_pt  = [screenCenter_pt(X)-100, screenCenter_pt(Y)];
+                
             % -------------------------
             % Present: Pre-trial frame
             % -------------------------
@@ -119,8 +125,10 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             WaitSecs(1);                                       % wait:
             %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
             
-%             fontColor = seColor2RGB('gray50')*luminance_contrast;
+            %             fontColor = seColor2RGB('gray50')*luminance_contrast;
             
+            
+            %% Choose letter stim
             letter_array = upper(...
                 { 'a','b','c','d','e','f','g','h','i','j','k'...
                 , 'l','m','n','o','p','q','r','s','t','u','v'...
@@ -130,25 +138,53 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             obj.letter_stim = randsample(letter_array, 2);
             obj.number_stim = randsample(number_array, 2);
             
+            
+            %% Present character stim
+
+            charRect         = Screen('TextBounds', winPtr, ...
+                obj.letter_stim{1});
+            charCenterOffset = 200;
+            charHeightOffset = RectHeight(charRect)/2;
+            charWidthOffset  = RectWidth(charRect)/2;
+            
+            sy_center = screenCenter_pt(Y) - charHeightOffset;
+            sx_center = screenCenter_pt(X) - charWidthOffset;
+            sy_bottomChar = sy_center + charCenterOffset;
+            sy_topChar    = sy_center - charCenterOffset;
+            sx_rightChar  = sx_center + charCenterOffset;
+            sx_leftChar   = sx_center - charCenterOffset;
+            
+            background.draw(winPtr);
+            fixation.draw(winPtr);
+
             switch obj.trial_type
                 case 'simultaneous'
-                    % ----------------------------------
-                    % Present: Simultaneous frame
-                    % ----------------------------------
-                    %                     start = GetSecs;
+
                     background.draw(winPtr);
                     fixation.draw(winPtr);
-                    DrawFormattedText(winPtr, obj.letter_stim{1} ...
-                        , 'center', 700, fontColor,5,0,0,2);
-                    DrawFormattedText(winPtr, obj.letter_stim{2} ...
-                        , 850,      600, fontColor,5,0,0,2);
+                    
+                    % TOP character
                     DrawFormattedText(winPtr, obj.number_stim{1} ...
-                        , 'center', 500, fontColor,5,0,0,2);
+                        , sx_center ...
+                        , sy_topChar ...
+                        , fontColor,5,0,0,2);
+                    % BOTTOM character
+                    DrawFormattedText(winPtr, obj.letter_stim{1} ...
+                        , sx_center ...
+                        , sy_bottomChar ...
+                        , fontColor,5,0,0,2);
+                    
+                    % LEFT character
                     DrawFormattedText(winPtr, obj.number_stim{2} ...
-                        , 1050,     600, fontColor,5,0,0,2);
-                    Screen('Flip', winPtr);
-
-                    WaitSecs(0.100);
+                        , sx_leftChar, sy_center ...
+                        , fontColor,5,0,0,2);
+                    % RIGHT character
+                    DrawFormattedText(winPtr, obj.letter_stim{2} ...
+                        , sx_rightChar, sy_center ...
+                        , fontColor,5,0,0,2);
+                    
+                    Screen('Flip', winPtr);                  
+                    WaitSecs(3);
 
                     
                 case 'sequential'
@@ -158,11 +194,16 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     %                     start = GetSecs;
                     background.draw(winPtr);
                     fixation.draw(winPtr);
-                    DrawFormattedText(winPtr, obj.letter_stim{1} ...
-                        , 'center', 700, fontColor,5,0,0,2);
-
+                    % TOP character
                     DrawFormattedText(winPtr, obj.number_stim{1} ...
-                        , 'center', 500, fontColor,5,0,0,2);
+                        , sx_center ...
+                        , sy_topChar ...
+                        , fontColor,5,0,0,2);
+                    % BOTTOM character
+                    DrawFormattedText(winPtr, obj.letter_stim{1} ...
+                        , sx_center ...
+                        , sy_bottomChar ...
+                        , fontColor,5,0,0,2);
                     Screen('Flip', winPtr);
                     WaitSecs(0.050);
                     
@@ -171,10 +212,16 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     Screen('Flip', winPtr);
                     WaitSecs(0.800);
                     
-                    DrawFormattedText(winPtr, obj.letter_stim{2} ...
-                        , 850,      600, fontColor,5,0,0,2);
+                    background.draw(winPtr);
+                    fixation.draw(winPtr);
+                    % LEFT character
                     DrawFormattedText(winPtr, obj.number_stim{2} ...
-                        , 1050,     600, fontColor,5,0,0,2);
+                        , sx_leftChar, sy_center ...
+                        , fontColor,5,0,0,2);
+                    % RIGHT character
+                    DrawFormattedText(winPtr, obj.letter_stim{2} ...
+                        , sx_rightChar, sy_center ...
+                        , fontColor,5,0,0,2);
                     Screen('Flip', winPtr);
                     WaitSecs(0.050);
                     
@@ -182,7 +229,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
                     error('trial type');
                     % do nothing
             end % switch
-           
+
             
             % ----------------------------------
             % Subj Response
