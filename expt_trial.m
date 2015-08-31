@@ -1,6 +1,6 @@
-classdef ExptTrial_StaircasedDividedAttention < handle
+classdef expt_trial < handle
     %
-    % Experimentor Defined Variables:
+    % 
     %
     
     properties
@@ -43,7 +43,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
     
     methods
         
-        function obj   = ExptTrial_StaircasedDividedAttention(varargin)
+        function obj   = expt_trial(varargin)
             
             switch nargin
                 case 0
@@ -152,6 +152,10 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             
             %% Present character stim
 
+            %            ifi = Screen('GetFlipInterval', winPtr);
+            %            trueStimOnsetTimestamp = Sc
+            %
+            
             background.draw(winPtr);
             fixation.draw(winPtr);
 
@@ -237,7 +241,7 @@ classdef ExptTrial_StaircasedDividedAttention < handle
             obj.saveResponse(subjectResponse_01);              % save the response to the expt class structure
             % UPDATE QUEST
             
-            WaitSecs(0.500);
+            WaitSecs(0.250);
             
             DrawFormattedText(winPtr, '??', 'center', 'center', seColor2RGB('white'), 5,0,0,2);
             Screen('Flip', winPtr);

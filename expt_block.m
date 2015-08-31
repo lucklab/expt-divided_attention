@@ -1,19 +1,13 @@
-classdef ExptBlock_StaircasedDividedAttention < handle
-    %  obj = visualSearch_statLearning_block(cueColorList, targColorList, target_presence_list)
+classdef expt_block < handle
+    %  obj = expt_block()
     %
-    % gonna need:
-    %     exptVars.cue2targDur;
-    %     exptVars.possibleColors
-    %     orientationList {'up', 'down'}
-    %     exptVars.validPercent
-    %     exptVars.num_trial_copies
-    
     
     properties
         
         subject_ID              = 'Z99';
+        experimentID            = 'SZ-Sequential/Simultaneous Attention';
         run_order_num           = 99;
-        trials                  = []; % ExptTrial_ExptStaircasedDividedAttention.empty();                     % array for SINGLETRIAL objs
+        trials                  = []; % expt_trial.empty();                     % array for SINGLETRIAL objs
         numTrials               = 0;
         
         % INPUT:
@@ -21,8 +15,8 @@ classdef ExptBlock_StaircasedDividedAttention < handle
         num_trial_copies        = 10;
         
         % Factors
-        block_type              = 'simultaneous'
-        
+        block_type              = 'simultaneous';
+        catch_block             = '';
         
         % Non-factors
         searchAnnulusRadius     = 200;
@@ -36,7 +30,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
     
     methods
         
-        function obj = ExptBlock_StaircasedDividedAttention(varargin)
+        function obj = expt_block(varargin)
             % constructor method for TRIALBLOCK obj
             %  obj = visualSearch_statLearning_block(cueColorList, targColorList, target_presence_list)
             
@@ -44,7 +38,8 @@ classdef ExptBlock_StaircasedDividedAttention < handle
             switch nargin
                 
                 % FOR DEBUGGING PURPOSES ONLY
-                case 0                                                              % Default settings
+                case 0
+                    % Default settings
                     %                     obj.subject_ID                  = 'Z99';
                     %                     obj.run_order_num               = '99';
                     %                     obj.trials                      = wedgewood_trial.empty;                        %
@@ -53,6 +48,9 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                     %                     obj.ITI_range                    = {1000 1400};                                  %
                     %                     obj.searchAnnulusRadius           = 200;
                     %
+                    
+                case 1
+                    obj.block_type = varargin{1};
                     %
                     %                 case 11
                     %
@@ -81,11 +79,11 @@ classdef ExptBlock_StaircasedDividedAttention < handle
             %   if trial multiplier is zero (default) then doesn't      %
             %   generate a trial array                                  %
             % --------------------------------------------------------- %
-            obj.trials   = ExptTrial_StaircasedDividedAttention.empty();          % cell array for SINGLETRIAL objs
+            obj.trials   = expt_trial.empty();          % cell array for SINGLETRIAL objs
             trialNum     = 1;                    % reset trial count
             
             for num_trial_copiesIndex = 1:obj.num_trial_copies
-%                 unique_ID                   = 11;                   % reset the unique trial ID number (for ERPSS event codes)
+                %                 unique_ID                   = 11;                   % reset the unique trial ID number (for ERPSS event codes)
                 
                 % -------------------- %
                 % Generate Base Trials %
@@ -94,14 +92,14 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                 
                 
                 % create new single trial
-                obj.trials(trialNum)     = ExptTrial_StaircasedDividedAttention(obj.block_type);
+                obj.trials(trialNum)     = expt_trial(obj.block_type);
                 trialNum                 = trialNum+1;                          % increment trial num
                 
                 
-%                 unique_ID                = unique_ID+1;                         % increment unique trial ID
-%                 if(mod(trialNum, 10) == 0); fprintf('%d...', trialNum); end;    % display current status
+                %                 unique_ID                = unique_ID+1;                         % increment unique trial ID
+                %                 if(mod(trialNum, 10) == 0); fprintf('%d...', trialNum); end;    % display current status
                 
-
+                
             end                 % trial multiplier loop
             
             
@@ -111,7 +109,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
         end % function
         
         
-
+        
         
         
         function value = randomize(obj)
@@ -150,7 +148,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                 end
                 
             end % trial loop
-        
+            
         end % function
         
         function testRun(obj)
@@ -167,11 +165,11 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                 %range = 5; % tGuess+(-range/2:grain:range/2)
                 
                 qStruct = QuestCreate(tGuess,tGuessSd,pThreshold,beta,delta,gamma); %range and grain default
- 
                 
-                %% Setup trial
-                bgColorWd = 'black';
+                
+                %% Setup trial                
                 clc; HideCursor;
+                bgColorWd = 'black';
                 [ winPtr, ~, screenCenter_pt ]      = seSetupScreen(seColor2RGB(bgColorWd));  % setup screen
                 background                          = stimBackground(bgColorWd);                                % setup background stim
                 fixation                            = stimFixationPt(screenCenter_pt);                              % setup fixation stim
@@ -197,7 +195,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                     
                     %% execute trial
                     obj.trials(iTrial).run(winPtr, background, fixation, stimColor);
-                
+                    
                     %% update Quest
                     display(obj.trials(iTrial).accuracy);
                     qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
@@ -212,7 +210,7 @@ classdef ExptBlock_StaircasedDividedAttention < handle
                 ShowCursor;
                 Screen('CloseAll');                             % close psychtoolbox screen
                 
-            catch err 
+            catch err
                 ShowCursor;
                 Screen('CloseAll');                             % close psychtoolbox screen
                 rethrow(err);

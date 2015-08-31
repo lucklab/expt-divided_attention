@@ -1,10 +1,10 @@
-classdef Expt_StaircasedDividedAttention
+classdef expt_SequentialSimultaneousAttention
     % Author:   Jason Arita
     % Version:  1
     %
     
     properties
-        name                            = 'Experiment_Name';
+        name                            = 'SZ-Sequential/Simultaneous Attention';
         block;                          % where all trial data is stored
         date;                           % current date (see help DATESTR)
         start_time;                     % current time
@@ -83,7 +83,7 @@ classdef Expt_StaircasedDividedAttention
     
     methods
         
-        function obj    = visualSearch_statLearning(varargin)
+        function obj    = expt_SequentialSimultaneousAttention(varargin)
             
             
             % INPUT HANDLING:
@@ -149,7 +149,7 @@ classdef Expt_StaircasedDividedAttention
             % Set up trials
             %------------------------
             display('Generating Trial Permutations...');
-            obj.block = ExptBlock   ...
+            obj.block = expt_block   ...
                 ( obj.subjectID                     ...
                 , obj.run_num                       ...
                 , obj.trialMultiplier               ...
