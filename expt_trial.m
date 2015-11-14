@@ -6,16 +6,11 @@ classdef expt_trial < handle
     properties
         
         % Experimentor Defined Variables
-        experimentID        = 'sz_sequential_simultaneous_attn';
-        subject_ID          = 'Z99';
+        expt_id             = 'sz_sequential_simultaneous_attn';
+        subj_id             = 'Z99';
         trial_order_num     = NaN;
         trial_type          = 'sequential';
-        %         run_order_num       = 1;
-        %         setSize             = 8;
-        %         targetPresence      = 'present';
-        %         targetLocation      = 3;
-        %         targetOrientation   = 'down';
-        %         objectColor         = 'magenta';
+
         ITI;
         letter_stim         = {};                    % Search stimulus to draw
         number_stim         = {};
@@ -41,6 +36,7 @@ classdef expt_trial < handle
             , 'L','M','N','P','Q','R','S','T','U','V'...
             , 'W','X','Y','Z'});
         number_array = {'1','2','3','4','5','6','7','8','9'};
+        char_stim = {};
         
         search_annulus_radius   = 200;
         ITI_range               = [.250 .500];
@@ -60,13 +56,13 @@ classdef expt_trial < handle
             switch nargin
                 case 0
                     
-                case 2
-                    obj.trial_type                  = varargin{1};
-                    obj.experimentID                = varargin{2};
-                    
+                case 3
+                    obj.trial_type             = varargin{1};
+                    obj.expt_id                = varargin{2};
+                    obj.subj_id                = varargin{3};
                 case 9
                     
-%                     obj.subject_ID                  = varargin{1};
+%                     obj.subj_id                  = varargin{1};
 %                     obj.run_order_num               = varargin{2};
 %                     obj.event_code                  = varargin{3};
 %                   
@@ -89,8 +85,10 @@ classdef expt_trial < handle
             
             %             obj.searchStimuli = stimLandoltCArray(obj.setSize, obj.search_annulus_radius, obj.targetLocation, obj.targetOrientation, obj.objectColor); % , -7*pi/obj.setSize);
             %% Choose character stimuli            
-            obj.letter_stim = randsample(obj.letter_array, 2);
-            obj.number_stim = randsample(obj.number_array, 2);
+%             obj.letter_stim = randsample(obj.letter_array, 2);
+%             obj.number_stim = randsample(obj.number_array, 2);
+            obj.char_stim = [randsample(obj.letter_array, 2), randsample(obj.number_array, 2)];
+            
                         
             %% Set up response key mapping
             
@@ -170,28 +168,31 @@ classdef expt_trial < handle
             switch obj.trial_type
                 case 'simultaneous'
 
+                    obj.char_stim = Shuffle(obj.char_stim);
+                    
                     background.draw(winPtr);
                     fixation.draw(winPtr);
                     
                     % TOP character
-                    DrawFormattedText(winPtr, obj.number_stim{1} ...
+                    DrawFormattedText(winPtr, obj.char_stim{1} ...
                         , sx_center ...
                         , sy_topChar ...
                         , fontColor,5,0,0,2);
                     % BOTTOM character
-                    DrawFormattedText(winPtr, obj.letter_stim{1} ...
+                    DrawFormattedText(winPtr, obj.char_stim{2} ...
                         , sx_center ...
                         , sy_bottomChar ...
                         , fontColor,5,0,0,2);
                     
-                    % LEFT character
-                    DrawFormattedText(winPtr, obj.number_stim{2} ...
-                        , sx_leftChar, sy_center ...
-                        , fontColor,5,0,0,2);
                     % RIGHT character
-                    DrawFormattedText(winPtr, obj.letter_stim{2} ...
+                    DrawFormattedText(winPtr, obj.char_stim{3} ...
                         , sx_rightChar, sy_center ...
                         , fontColor,5,0,0,2);
+                    % LEFT character
+                    DrawFormattedText(winPtr, obj.char_stim{4} ...
+                        , sx_leftChar, sy_center ...
+                        , fontColor,5,0,0,2);
+
                     
                     Screen('Flip', winPtr);                  
                     WaitSecs(.100);
@@ -199,6 +200,7 @@ classdef expt_trial < handle
                     
                 case 'sequential'
 
+                    
                     background.draw(winPtr);
                     fixation.draw(winPtr);
                     % TOP character

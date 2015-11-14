@@ -5,7 +5,7 @@ classdef expt_block < handle
     properties
         
         subject_ID              = 'Z99';
-        experimentID            = 'sz_sequential_simultaneous_attn';
+        experimentID            = 'scz_seq_sim_divided_attn';
         run_order_num           = 99;
         trials                  = []; % expt_trial.empty();                     % array for SINGLETRIAL objs
         numTrials               = 0;
@@ -22,7 +22,7 @@ classdef expt_block < handle
         searchAnnulusRadius     = 200;
         
         
-        save_filename           = 'test_data.txt';
+        save_filename           = 'test_data.csv';
         save_filedir            = 'data';
         
     end % properties

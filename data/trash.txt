@@ -1,6 +1,0 @@
-experimentID,subject_ID,trial_order_num,trial_type,ITI,letter_stim,number_stim,accuracy,response01_key,response01_time,response01_acc,response02_key,response02_time,response02_acc,
-sz_sequential_simultaneous_attn,Z99,99,sequential,,KF,92,,noResponse,NaN,NaN,noResponse,NaN,NaN,
-sz_sequential_simultaneous_attn,Z99,99,sequential,,KF,92,0  1,j,1.9217,FALSE,k,0.63505,TRUE,
-sz_sequential_simultaneous_attn,Z99,NaN,sequential,,BF,12,noResponse,NaN,NaN,noResponse,NaN,NaN,
-sz_sequential_simultaneous_attn,Z99,1,sequential,,BF,12,b,1.2344,TRUE,d,0.45746,FALSE,
-sz_sequential_simultaneous_attn,Z99,1,sequential,,BF,12,F,0.58122,TRUE,D,0.36841,FALSE,
