@@ -5,7 +5,7 @@ classdef expt_block < handle
     properties
         
         subject_ID              = 'Z99';
-        experimentID            = 'SZ-Sequential/Simultaneous Attention';
+        experimentID            = 'sz_sequential_simultaneous_attn';
         run_order_num           = 99;
         trials                  = []; % expt_trial.empty();                     % array for SINGLETRIAL objs
         numTrials               = 0;
@@ -21,6 +21,9 @@ classdef expt_block < handle
         % Non-factors
         searchAnnulusRadius     = 200;
         
+        
+        save_filename           = 'test_data.txt';
+        save_filedir            = 'data';
         
     end % properties
     
@@ -92,7 +95,7 @@ classdef expt_block < handle
                 
                 
                 % create new single trial
-                obj.trials(trialNum)     = expt_trial(obj.block_type);
+                obj.trials(trialNum)     = expt_trial(obj.block_type, obj.experimentID);
                 trialNum                 = trialNum+1;                          % increment trial num
                 
                 
@@ -186,7 +189,7 @@ classdef expt_block < handle
                 
                 for iTrial = 1:length(obj.trials)
                     %% to determine current trial test value, ask quest what you should test
-                    questOutput = QuestQuantile(qStruct);	% Recommended by Pelli (1987), and still our favorite.
+                    questOutput = QuestQuantile(qStruct);	% Recommended by Pelli (1987)
                     luminanceContrastTested = 10.^questOutput;
                     display(luminanceContrastTested);
                     
@@ -194,7 +197,7 @@ classdef expt_block < handle
                     display(stimColor);
                     
                     %% execute trial
-                    obj.trials(iTrial).run(winPtr, background, fixation, stimColor);
+                    obj.trials(iTrial).run(iTrial, winPtr, background, fixation, stimColor);
                     
                     %% update Quest
                     display(obj.trials(iTrial).accuracy);
@@ -204,6 +207,13 @@ classdef expt_block < handle
                     qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
                         obj.trials(iTrial).accuracy(2)); %report what we did
                     
+                    % SAVE TO FILE
+
+                    % Save trial information to file
+%                     if(currTrialNum == 1); obj.trials(iTrial).save_to_file('header'); end;             % Save header information to file before first trial
+%                     obj.trials(iTrial).save_to_file(currTrialNum);                                     % Save trial information to file
+
+
                     WaitSecs(2);
                 end
                 

@@ -6,8 +6,9 @@ classdef expt_trial < handle
     properties
         
         % Experimentor Defined Variables
+        experimentID        = 'sz_sequential_simultaneous_attn';
         subject_ID          = 'Z99';
-        trial_order_num     = 99;
+        trial_order_num     = NaN;
         trial_type          = 'sequential';
         %         run_order_num       = 1;
         %         setSize             = 8;
@@ -16,19 +17,30 @@ classdef expt_trial < handle
         %         targetOrientation   = 'down';
         %         objectColor         = 'magenta';
         ITI;
+        letter_stim         = {};                    % Search stimulus to draw
+        number_stim         = {};
         
-        accuracy            = [];            % subject's single trial accuracy {1 == correct || 0 == incorrect}
-        resp_keycode        = 'noResponse';   % response gamepad key number
-        RT;                                   % subject's single trial response time
-        
+        response01_key      = 'noResponse';   
+        response01_time     = NaN;              
+        response01_acc      = NaN;
+
+        response02_key      = 'noResponse';
+        response02_time     = NaN;              
+        response02_acc      = NaN;
+
     end % properties
     
     
     
     properties (Hidden = true)
         event_code;
-        letter_stim;                    % Search stimulus to draw
-        number_stim;
+        
+        % Removed letters: 'O','I'
+        letter_array = upper(...
+            { 'A','B','C','D','E','F','G','H','J','K'...
+            , 'L','M','N','P','Q','R','S','T','U','V'...
+            , 'W','X','Y','Z'});
+        number_array = {'1','2','3','4','5','6','7','8','9'};
         
         search_annulus_radius   = 200;
         ITI_range               = [.250 .500];
@@ -48,8 +60,9 @@ classdef expt_trial < handle
             switch nargin
                 case 0
                     
-                case 1
+                case 2
                     obj.trial_type                  = varargin{1};
+                    obj.experimentID                = varargin{2};
                     
                 case 9
                     
@@ -75,7 +88,10 @@ classdef expt_trial < handle
             %% Set up stimulus objects
             
             %             obj.searchStimuli = stimLandoltCArray(obj.setSize, obj.search_annulus_radius, obj.targetLocation, obj.targetOrientation, obj.objectColor); % , -7*pi/obj.setSize);
-            
+            %% Choose character stimuli            
+            obj.letter_stim = randsample(obj.letter_array, 2);
+            obj.number_stim = randsample(obj.number_array, 2);
+                        
             %% Set up response key mapping
             
             %             obj.responseKeyMap      = cell(10,1);
@@ -92,7 +108,7 @@ classdef expt_trial < handle
         end % constructor method
         
         
-        function run(obj, winPtr, background, fixation, fontColor)
+        function run(obj, trialNum, winPtr, background, fixation, luminanceContrast)
             % -------------------------
             % Execute Single Trial
             % -------------------------
@@ -108,35 +124,15 @@ classdef expt_trial < handle
             %             fprintf('=================================================\n');
             %             fprintf('Current trial Num:\t%3d / %3d\t trials\n'  , currTrialNum, numTrials);
             %             fprintf('\n');
-            keyboard = seKeyboard();
+            obj.trial_order_num = trialNum;
+            keyboard  = seKeyboard();
+            fontColor = abs(background.color_rgb - luminanceContrast);
 
-                
-            %% Present: Pre-trial frame
-            background.draw(winPtr);
-            Screen('Flip', winPtr);        
-            WaitSecs(0.500);  
-            
-            background.draw(winPtr);
-            fixation.draw(winPtr);
-            Screen('Flip', winPtr);        
-            WaitSecs(0.500);              
-            %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
-            
-            
-            %% Choose character stimuli
-            letter_array = upper(...
-                { 'a','b','c','d','e','f','g','h','i','j','k'...
-                , 'l','m','n','o','p','q','r','s','t','u','v'...
-                , 'w','x','y','z'});
-            number_array = {'1','2','3','4','5','6','7','8','9'};
-            
-            obj.letter_stim = randsample(letter_array, 2);
-            obj.number_stim = randsample(number_array, 2);
-            
-            
+                        
             %% Calculate character locations
             X = 1; Y = 2;
-            screenCenter_pt = fixation.location_pt;
+            [winSizeX, winSizeY] = Screen('WindowSize', winPtr);
+            screenCenter_pt = [winSizeX winSizeY]/2;
             charRect         = Screen('TextBounds', winPtr, 'A');
             charCenterOffset = 200;
             charHeightOffset = RectHeight(charRect)/2;
@@ -148,6 +144,18 @@ classdef expt_trial < handle
             sy_topChar    = sy_center - charCenterOffset;
             sx_rightChar  = sx_center + charCenterOffset;
             sx_leftChar   = sx_center - charCenterOffset;
+            
+            
+            %% Present: Pre-trial frame
+            background.draw(winPtr);
+            Screen('Flip', winPtr);        
+            WaitSecs(0.500);  
+            
+            background.draw(winPtr);
+            fixation.draw(winPtr);
+            Screen('Flip', winPtr);        
+            WaitSecs(0.500);              
+            %                     fprintf('Pre-trial fixation dur: %1.4f\t\t ms\n' , (GetSecs-start)/1000);
             
             
             %% Present character stim
@@ -237,24 +245,21 @@ classdef expt_trial < handle
             %                     start = GetSecs;
             DrawFormattedText(winPtr, '?', 'center', 'center', seColor2RGB('white'), 5,0,0,2);
             Screen('Flip', winPtr);
+            responseNum = 1;
             subjectResponse_01 = keyboard.waitForResponse();
-            obj.saveResponse(subjectResponse_01);              % save the response to the expt class structure
+            obj.saveResponse(subjectResponse_01, responseNum);              % save the response to the expt class structure
             % UPDATE QUEST
             
             WaitSecs(0.250);
             
             DrawFormattedText(winPtr, '??', 'center', 'center', seColor2RGB('white'), 5,0,0,2);
             Screen('Flip', winPtr);
+            responseNum = 2;
             subjectResponse_02 = keyboard.waitForResponse();
-            obj.saveResponse(subjectResponse_02);              % save the response to the expt class structure
+            obj.saveResponse(subjectResponse_02, responseNum);              % save the response to the expt class structure
             % UPDATE QUEST
             
-            
-            %             subjectResponse = gamepadObject.waitForResponse(obj.responseDur);
-            %             if(~isnan(subjectResponse.responseTime))
-            %                 WaitSecs(obj.post_response_duration+(obj.responseDur-subjectResponse.responseTime));
-            %             end
-            %                     targetDisplayDur = GetSecs-start;
+           
             
             % ------------------------------
             % Present: Post-response frame
@@ -303,7 +308,9 @@ classdef expt_trial < handle
                 Screen('TextSize', winPtr, fontSize);    % setup text size
 
                 
-                obj.run(winPtr, background, fixation, seColor2RGB('white'));
+                trialNum = 1;
+                luminanceContrast = 50;
+                obj.run(trialNum, winPtr, background, fixation, luminanceContrast);
                 
                 
                 ShowCursor;
@@ -318,22 +325,132 @@ classdef expt_trial < handle
         end % function
         
         
-        function trialObj = saveResponse(trialObj, subjectResponse)
+        function trialObj = saveResponse(trialObj, subjectResponse, responseNum)
+            %             response01_key      = 'noResponse';
+            %             response01_time     = NaN;
+            %             response01_acc      = NaN;
+           
             
             % Save response info into trial object
-            trialObj.resp_keycode    = subjectResponse.keycode;               % response gamepad key number
-            trialObj.RT              = subjectResponse.responseTime;                  % subject's single trial response time
+            responseNum = num2str(responseNum);
+            eval(['trialObj.response0' responseNum '_key = upper(subjectResponse.keycode{1})']);
+            eval(['trialObj.response0' responseNum '_time = subjectResponse.responseTime']);
+
+            %             trialObj.resp_keycode    = subjectResponse.keycode;               % response gamepad key number
+            %             trialObj.RT              = subjectResponse.responseTime;                  % subject's single trial response time
             
             % Calculate accuracy
             if( ismember( ...
-                    trialObj.resp_keycode, ...
+                    subjectResponse.keycode, ...
                     lower(trialObj.letter_stim)))
-                trialObj.accuracy = [trialObj.accuracy true];
+                eval(['trialObj.response0' responseNum '_acc = true']);
+
             else
-                trialObj.accuracy = [trialObj.accuracy false];
+                eval(['trialObj.response0' responseNum '_acc = false']);
             end
             
         end       % method
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        function save_to_file(obj,save_filename, printHeader, separator, decimal)
+            % Writes cell array content into a *.csv file.
+            %
+            % CELL2CSV(obj.save_filename, cellArray, separator, excelYear, decimal)
+            %
+            % obj.save_filename     = Name of the file to save. [ i.e. 'text.csv' ]
+            % cellArray    = Name of the Cell Array where the data is in
+            % separator    = sign separating the values (default = ';')
+            % decimal      = defines the decimal separator (default = '.')
+            %
+            %         by Sylvain Fiedler, KA, 2004
+            % updated by Sylvain Fiedler, Metz, 06
+            % fixed the logical-bug, Kaiserslautern, 06/2008, S.Fiedler
+            % added the choice of decimal separator, 11/2010, S.Fiedler
+            
+            % Check for optional Variables
+            if ~exist('separator', 'var')
+                separator = ','; 
+            end
+            
+            if ~exist('printHeader', 'var')
+                printHeader = false; 
+            end
+            
+            if ~exist('decimal', 'var')
+                decimal = '.';
+            end
+            
+
+            % Write file            
+            outputFileID = fopen(save_filename, 'a+'); % open/create file; append data
+            
+            
+            % Print all variables in trial data object
+            var_names    = transpose(fieldnames(obj));            
+            for var_name = var_names
+                
+                if (printHeader)
+                    % Print variable names
+                    print_value = var_name{1};
+                else
+                    % Print variable values
+                    print_value = eval(['obj.' var_name{1}]);
+                    
+                    % If zero, then empty cell
+                    if size(print_value, 1) == 0
+                        print_value = '';
+                    end
+                    
+                    % If numeric -> String
+                    if isnumeric(print_value)
+                        print_value = num2str(print_value);
+                        % Conversion of decimal separator (4 Europe & South America)
+                        % http://commons.wikimedia.org/wiki/File:DecimalSeparator.svg
+                        if decimal ~= '.'
+                            print_value = strrep(print_value, '.', decimal);
+                        end
+                    end
+                    
+                    % If logical -> 'true' or 'false'
+                    if islogical(print_value)
+                        if print_value == 1
+                            print_value = 'TRUE';
+                        else
+                            print_value = 'FALSE';
+                        end
+                    end
+
+                    % If cell array -> String
+                    if iscell(print_value)
+                        print_value = cell2mat(print_value);
+                    end
+                end
+                
+                
+                % OUTPUT value
+                fprintf(outputFileID, '%s', print_value);
+                
+                % OUTPUT separator
+                %     if s ~= size(cellArray, 2)
+                fprintf(outputFileID, separator);
+                %     end
+                
+            end
+            
+            fprintf(outputFileID, '\n'); % print new line at end of every line
+            
+            % Closing file
+            fclose(outputFileID);
+        end
         
         
     end % methods
