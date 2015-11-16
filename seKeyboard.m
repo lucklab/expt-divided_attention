@@ -120,7 +120,7 @@ classdef seKeyboard < handle
                     % ---------------------------- %
                     % Check for Accepted Responses %
                     % ---------------------------- %
-                    [keyIsDownTimeStamp, keyCode, ~] = KbReleaseWait(-1);
+                    [keyIsDownTimeStamp, keyCode, ~] = KbPressWait(-1);
                     
                     if(~isempty(intersect(KbName(keyCode), obj.acceptedResponses)))
                         foundResponses = intersect(KbName(keyCode), obj.acceptedResponses);

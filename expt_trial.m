@@ -219,7 +219,8 @@ classdef expt_trial < handle
                     DrawFormattedText(winPtr, obj.char_stim{4} ...
                         , sx_leftChar, sy_center ...
                         , obj.font_rgb_color,5,0,0,2);
-%                     WaitSecs(0.050);
+                    Screen('Flip', winPtr);
+                    WaitSecs(0.050);
                     
                 otherwise
                     error('trial type');
@@ -231,17 +232,19 @@ classdef expt_trial < handle
             % Subj Response
             % ----------------------------------
             %                     start = GetSecs;
+            background.draw(winPtr);
             DrawFormattedText(winPtr, '?', 'center', 'center', seColor2RGB('white'), 5,0,0,2);
             Screen('Flip', winPtr);
-            responseNum = 1;
+            responseNum        = 1;
             subjectResponse_01 = keyboard.waitForResponse();
             obj.saveResponse(subjectResponse_01, responseNum);              % save the response to the expt class structure
             
             WaitSecs(0.300);
             
+            background.draw(winPtr);
             DrawFormattedText(winPtr, '??', 'center', 'center', seColor2RGB('white'), 5,0,0,2);
             Screen('Flip', winPtr);
-            responseNum = 2;
+            responseNum        = 2;
             subjectResponse_02 = keyboard.waitForResponse();
             obj.saveResponse(subjectResponse_02, responseNum);              % save the response to the expt class structure
             
