@@ -5,12 +5,12 @@ classdef expt_SequentialSimultaneousAttention
     
     properties
         expt_id                 = 'scz_seq_sim_divided_attn';
-        subjectID;                      % from prompt
+        subj_id;                % from prompt
 
-        blocks;                          % where all trial data is stored
+        blocks;                 % where all trial data is stored
         catch_blocks;
-        date;                           % current date (see help DATESTR)
-        start_time;                     % current time
+        date;                   % current date (see help DATESTR)
+        start_time;             % current time
         end_time;
         
         
@@ -91,7 +91,7 @@ classdef expt_SequentialSimultaneousAttention
                     if(isempty(answer))
                         return;
                     else
-                        obj.subjectID           = answer{1};
+                        obj.subj_id           = answer{1};
                     end
                     
                 otherwise
@@ -106,11 +106,11 @@ classdef expt_SequentialSimultaneousAttention
             %------------------------
             display('Generating Trial Permutations...');
        
-            obj.blocks{1} = expt_block(obj.expt_id, obj.subjectID, 'simultaneous', 'no_catch');
-            obj.blocks{2} = expt_block(obj.expt_id, obj.subjectID, 'sequential'  , 'no_catch');
+            obj.blocks{1} = expt_block(obj.expt_id, obj.subj_id, 'simultaneous', 'no_catch');
+            obj.blocks{2} = expt_block(obj.expt_id, obj.subj_id, 'sequential'  , 'no_catch');
             
-            obj.catch_blocks{1} = expt_block(obj.expt_id, obj.subjectID, 'simultaneous', 'catch');
-            obj.catch_blocks{2} = expt_block(obj.expt_id, obj.subjectID, 'sequential'  , 'catch');
+            obj.catch_blocks{1} = expt_block(obj.expt_id, obj.subj_id, 'simultaneous', 'catch');
+            obj.catch_blocks{2} = expt_block(obj.expt_id, obj.subj_id, 'sequential'  , 'catch');
             
             display('Done');
             
@@ -127,9 +127,9 @@ classdef expt_SequentialSimultaneousAttention
             
             %             % Save header to output file
             %             if(obj.isPractice)
-            %                 obj.save_filename   = [ './' obj.save_directory '/practice_' obj.name '_' obj.subjectID '.txt'];
+            %                 obj.save_filename   = [ './' obj.save_directory '/practice_' obj.name '_' obj.subj_id '.txt'];
             %             else
-            %                 obj.save_filename   = [ './' obj.save_directory '/' obj.name '_' obj.subjectID '.txt'];
+            %                 obj.save_filename   = [ './' obj.save_directory '/' obj.name '_' obj.subj_id '.txt'];
             %             end
             
         end % constructor method

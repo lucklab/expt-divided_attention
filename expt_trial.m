@@ -7,6 +7,8 @@ classdef expt_trial < handle
         
         % Experimentor Defined Variables
         save_filename       = '';
+        date                = '';
+        start_time          = '';
         expt_id             = 'sz_sequential_simultaneous_attn';
         subj_id             = 'Z99';
         trial_order_num     = NaN;
@@ -54,11 +56,13 @@ classdef expt_trial < handle
             switch nargin
                 case 0
                     
-                case 4
+                case 6
                     obj.trial_type             = varargin{1};
                     obj.catch_type             = varargin{2};
                     obj.expt_id                = varargin{3};
                     obj.subj_id                = varargin{4};
+                    obj.date                   = varargin{5};
+                    obj.start_time             = varargin{6};
                 otherwise
                     error('Wrong number of input arguments');
             end
@@ -103,7 +107,10 @@ classdef expt_trial < handle
             %             fprintf('Actual  ITI Duration:\t%-8.4f\tms\n'       , (GetSecs-ITI_start_time)*1000);
 
             fprintf('=================================================\n');
-            fprintf('Current trial Num:\t\t%3d\n'    , trialNum);
+            fprintf('Current trial Num:\t\t%03d\n'    , trialNum);
+            fprintf('Block type: \t\t\t%s\n', obj.trial_type);
+            fprintf('Catch type: \t\t\t%s\n', obj.catch_type);
+
             fprintf('Luminance contrast: \t\t%3.3f\n', luminanceContrast(1));
             fprintf('\n');
             

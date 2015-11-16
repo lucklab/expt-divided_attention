@@ -62,6 +62,9 @@ classdef expt_block < handle
             obj.trials   = expt_trial.empty();          % cell array for SINGLETRIAL objs
             trialNum     = 1;                    % reset trial count
             
+            obj.date        = datestr(now, 'mm/dd/yyyy');  % current date (see help DATESTR)
+            obj.start_time  = datestr(now, 'HH:MM:SS AM'); % current time
+
             
             if strcmpi(obj.catch_type, 'catch')
                 num_trials_per_block = obj.num_catch_trial_copies;
@@ -80,7 +83,10 @@ classdef expt_block < handle
                     obj.block_type,   ...
                     obj.catch_type,   ...
                     obj.expt_id,      ...
-                    obj.subj_id);
+                    obj.subj_id,      ...
+                    obj.date,         ...
+                    obj.start_time    ...
+                );
                 trialNum                 = trialNum+1;                          % increment trial num
                 
             end                 % trial multiplier loop
@@ -120,8 +126,6 @@ classdef expt_block < handle
         function run(obj)
             
             try
-                obj.date        = datestr(now, 'mm/dd/yyyy');  % current date (see help DATESTR)
-                obj.start_time  = datestr(now, 'HH:MM:SS AM'); % current time
 
                 
                 %% Setup QUEST
