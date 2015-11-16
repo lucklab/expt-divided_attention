@@ -13,11 +13,11 @@ On some set of trials, you will see 4 characters appear simultaneously on the sc
 ## Task
 Your task in this experiment is to **report which 2 letters appeared in single trial** via the keyboard. 
 
-- When you see a 1 question mark, enter in one of the letters you saw. 
+- When you see 1 question mark, enter in one of the letters you saw. 
 - When you see 2 question marks, enter in the other letter you saw. 
 - Order does not matter. 
 
-Throughout the trial, the brightness of the colors will change. So, even if you have a hard time seeing the letters, just **make your best guess** as to which 2 letters were presented. Typically, in the beginning the letters will be hard to see, so don't worry if you have to make a guess at the start. 
+Throughout the trial, the brightness of the colors will change. Even if you have a hard time seeing the letters, **make your best guess** as to which 2 letters appeared. Typically, at the start the letters will be hard to see, so don't worry if you have to make a guess. 
 
 
 

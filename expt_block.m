@@ -6,20 +6,22 @@ classdef expt_block < handle
         
         subj_id                 = 'Z99';
         expt_id                 = 'scz_seq_sim_divided_attn';
+        date                    = '';
+        start_time              = '';
         run_order_num           = 99;
         trials                  = []; % expt_trial.empty();                     % array for SINGLETRIAL objs
         numTrials               = 0;
         
         % INPUT:
         ITI_range               = [1.000, 1.250];
-        num_trial_copies        = 10;
+        num_trial_copies        = 200;
+        num_catch_trial_copies  = 50;   % ~3 mins per 50 trials
         
         % Factors
-        block_type              = 'simultaneous';
-        catch_type              = 'no_catch'; % 'catch'
+        block_type              = '';
+        catch_type              = ''; % 'catch'
         
         % Non-factors
-        searchAnnulusRadius      = 200;
         catch_luminance_contrast = 100;
                 
     end % properties
@@ -37,21 +39,14 @@ classdef expt_block < handle
             % INPUT HANDLING:
             switch nargin
                 
-                % FOR DEBUGGING PURPOSES ONLY
                 case 0
-                    % Default settings
-                    %                     obj.subj_id                  = 'Z99';
-                    %                     obj.run_order_num               = '99';
-                    %                     obj.trials                      = wedgewood_trial.empty;                        %
-                    %                     obj.num_trial_copies            = 1;                                            %
-                    %
-                    %                     obj.ITI_range                    = {1000 1400};                                  %
-                    %                     obj.searchAnnulusRadius           = 200;
-                    %
                     
-                case 2
-                    obj.block_type = varargin{1};
-                    obj.catch_type = varargin{2};
+                    
+                case 4
+                    obj.expt_id    = varargin{1};
+                    obj.subj_id    = varargin{2};
+                    obj.block_type = varargin{3};
+                    obj.catch_type = varargin{4};
                   
                 otherwise
                     error('Wrong number of input arguments');
@@ -67,14 +62,18 @@ classdef expt_block < handle
             obj.trials   = expt_trial.empty();          % cell array for SINGLETRIAL objs
             trialNum     = 1;                    % reset trial count
             
-            for num_trial_copiesIndex = 1:obj.num_trial_copies
-                %                 unique_ID                   = 11;                   % reset the unique trial ID number (for ERPSS event codes)
+            
+            if strcmpi(obj.catch_type, 'catch')
+                num_trials_per_block = obj.num_catch_trial_copies;
+            else
+                num_trials_per_block = obj.num_trial_copies;
+            end
+            
+            for num_trial_copiesIndex = 1:num_trials_per_block
                 
                 % -------------------- %
                 % Generate Base Trials %
-                % -------------------- %
-                
-                
+                % -------------------- %                
                 
                 % create new single trial
                 obj.trials(trialNum)     = expt_trial(...
@@ -84,36 +83,14 @@ classdef expt_block < handle
                     obj.subj_id);
                 trialNum                 = trialNum+1;                          % increment trial num
                 
-                
-                %                 unique_ID                = unique_ID+1;                         % increment unique trial ID
-                %                 if(mod(trialNum, 10) == 0); fprintf('%d...', trialNum); end;    % display current status
-                
-                
             end                 % trial multiplier loop
             
-            
+            obj.trials      = Shuffle(obj.trials);
             obj.numTrials   = length(obj.trials);
             fprintf('...done.\n')        % end status display
             
         end % function
         
-        
-        
-        
-        
-        function value = randomize(obj)
-            % returns randomized trials
-            %
-            % NOTE:
-            % Does not mutate obj itself. Need to run command:
-            %
-            %       exptBlockName.trials = exptBlockName.randomize();
-            %
-            % to do actual randomization
-            
-            value = Shuffle(obj.trials);
-            
-        end % method
         
         function displayTrials(obj, varargin)
             
@@ -143,6 +120,10 @@ classdef expt_block < handle
         function run(obj)
             
             try
+                obj.date        = datestr(now, 'mm/dd/yyyy');  % current date (see help DATESTR)
+                obj.start_time  = datestr(now, 'HH:MM:SS AM'); % current time
+
+                
                 %% Setup QUEST
                 tGuess      = log10(12);    % log of estimated threshold -  time for peripheral accuracy
                 tGuessSd    = log10(3);     % standard deviation
@@ -173,6 +154,22 @@ classdef expt_block < handle
                 
                 
                 
+                % Block start countdown
+                waitTime        = 3;
+                startTimestamp  = GetSecs;
+                while GetSecs-startTimestamp < waitTime
+                    countdown = waitTime-(round(GetSecs-startTimestamp));
+                    
+                    background.draw(winPtr);
+                    break_text = sprintf('The experiment will start in...%d' , countdown);
+                    DrawFormattedText(winPtr, break_text, 'center', 'center',seColor2RGB('white'),45,0,0,2);
+                    Screen('Flip', winPtr);            			% flip/draw buffer to display monitor
+                    
+                end
+                
+                
+                
+                
                 for iTrial = 1:length(obj.trials)
                     %% to determine current trial test value, ask quest what you should test
                     
@@ -200,6 +197,21 @@ classdef expt_block < handle
                                    
 
                 end
+                
+                
+                % Experiment start countdown
+                waitTime        = 10;
+                startTimestamp  = GetSecs;
+                while GetSecs-startTimestamp < waitTime
+                    countdown = waitTime-(round(GetSecs-startTimestamp));
+                    
+                    background.draw(winPtr);
+                    break_text = sprintf('Take a break\n\nThe experiment will continue in...%d', countdown);
+                    DrawFormattedText(winPtr, break_text, 'center', 'center',seColor2RGB('white'),45,0,0,2);
+                    Screen('Flip', winPtr);            			% flip/draw buffer to display monitor
+                    
+                end
+                
                 
                 ShowCursor;
                 Screen('CloseAll');                             % close psychtoolbox screen
