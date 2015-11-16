@@ -15,7 +15,7 @@ classdef seKeyboard < handle
     properties(Hidden = true)
         escape_keys     = zeros(1,256);     % Keyboard key combination to quit experiment
         pause_keys      = zeros(1,256);     % Keyboard key combination to pause experiment
-%         gamepadIndex;                     % Psychtoolbox index for gamepad devices (need for KbCheck)
+        %         gamepadIndex;                     % Psychtoolbox index for gamepad devices (need for KbCheck)
         
     end
     
@@ -92,17 +92,17 @@ classdef seKeyboard < handle
             %   objGamepad.waitForResponse(3.000, objDAQ);  % sends out an event code after waiting 3.000 seconds for a response
             %
             startTime           = GetSecs();
-
+            
             switch nargin
                 case 0
                 case 1
-                    waitDuration        = obj.DEFAULT_WAIT_DURATION;
+%                     waitDuration        = obj.DEFAULT_WAIT_DURATION;
                     opt_daq.isPresent   = false;
                 case 2
-                    waitDuration        = varargin{1};
+%                     waitDuration        = varargin{1};
                     opt_daq.isPresent   = false;
                 case 3
-                    waitDuration        = varargin{1};
+%                     waitDuration        = varargin{1};
                     opt_daq             = varargin{2};
             end
             
@@ -113,75 +113,31 @@ classdef seKeyboard < handle
             if(obj.isPresent)
                 
                 exitLoop = false;
+                
+                
                 while not(exitLoop);   % keep polling gamepad & keyboard for user response or experimentor pause/end key combination
                     
-                    % ------------------------------------ %
-                    % First, check if time limit  exceeded %
-                    % ------------------------------------ %                    
-                    if (GetSecs - startTime) > waitDuration
-                        exitLoop      = true;     % end waiting for response
-                    else
+                    % ---------------------------- %
+                    % Check for Accepted Responses %
+                    % ---------------------------- %
+                    [keyIsDownTimeStamp, keyCode, ~] = KbReleaseWait(-1);
+                    
+                    if(~isempty(intersect(KbName(keyCode), obj.acceptedResponses)))
+                        foundResponses = intersect(KbName(keyCode), obj.acceptedResponses);
                         
-                        
-                        % ------------------------------- %
-                        % Poll gamepad for button presses %
-                        % ------------------------------- %
-                        
-                        if ismac
-                            [keyIsDown, keyIsDownTimeStamp, keyCode]    = KbCheck();
-                        elseif ispc
-                            %                             [~,~,~,btn] = WinJoystickMex(obj.gamepadIndex);
-                            %                             keyIsDownTimeStamp  = GetSecs();
-                            %                             keyCode             = find(btn, 1);
-                            %                             keyIsDown           = ~isempty(keyCode);
-                        end
-                        %                         [KEYBOARD_keyIsDown, ~,KEYBOARD_keyCode]         = KbCheck();
-                        
-                        
-                        % ---------------------------- %
-                        % check for quit or pause keys %
-                        % ---------------------------- %
-                        %                         if (KEYBOARD_keyIsDown && isequal(KEYBOARD_keyCode, obj.escape_keys))
-                        %                             fprintf('Escape key-combination activated.\nProgram stopped.\n');
-                        %
-                        %                             opt_daq.sendEventCode(obj.EVENT_CODE_END);   % send out event codes if we have a daq var is inputted
-                        %                             ShowCursor;
-                        %                             Screen('CloseAll');         % close psychtoolbox
-                        %                             return;                     % quit experiment
-                        %                         elseif (KEYBOARD_keyIsDown && isequal(KEYBOARD_keyCode, obj.pause_keys))                  % pause experiment
-                        %                             fprintf('Experiment paused.\nHit any key to continue...\n');
-                        %
-                        %                             opt_daq.sendEventCode(obj.EVENT_CODE_PAUSE);   % send out event codes if we have a daq var is inputted
-                        %                             WaitSecs(1);
-                        %                             KbWait;
-                        %                             fprintf('Experiment Unpaused\n');
-                        %                         end
-                        
-                        
-                        if(keyIsDown)
-                            
-                            % ---------------------------- %
-                            % Check for Accepted Responses %
-                            % ---------------------------- %
-                            foundResponses = intersect(KbName(keyCode), obj.acceptedResponses);
-                            
-                            if(~isempty(foundResponses))
-                                                                
-                                for singleFoundResponse = foundResponses                                    
-                                    if(opt_daq.isPresent)
-                                        opt_daq.sendEventCode(singleFoundResponse);   % send out event codes if we have a daq var is inputted
-                                    end
-                                    %                                     fprintf('Button pressed = %d\n', singleFoundResponse);
-                                end
-   
-                                    resp.responseTime = keyIsDownTimeStamp - startTime;     % save response time
-                                    resp.keycode      = foundResponses;                     % save found responses
-                                    exitLoop          = true;                               % exit keyboard polling loop
+                        for singleFoundResponse = foundResponses
+                            if(opt_daq.isPresent)
+                                opt_daq.sendEventCode(singleFoundResponse);   % send out event codes if we have a daq var is inputted
                             end
-                            
-                        end % check if gamepad key is pressed
-                    end % check response time duration not exceeded
-                end % loop for gamepad key press
+                            %                                     fprintf('Button pressed = %d\n', singleFoundResponse);
+                        end
+                        
+                        resp.responseTime = keyIsDownTimeStamp - startTime;     % save response time
+                        resp.keycode      = foundResponses;                     % save found responses
+                        exitLoop          = true;                               % exit keyboard polling loop
+                    end
+                    
+                end % check response time duration not exceeded
                 
             else
                 error('USB Gamepad is not connected'); % Throw an error if gamepad IS NOT present
