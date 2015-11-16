@@ -4,8 +4,8 @@ classdef expt_block < handle
     
     properties
         
-        subject_ID              = 'Z99';
-        experimentID            = 'scz_seq_sim_divided_attn';
+        subj_id                 = 'Z99';
+        expt_id                 = 'scz_seq_sim_divided_attn';
         run_order_num           = 99;
         trials                  = []; % expt_trial.empty();                     % array for SINGLETRIAL objs
         numTrials               = 0;
@@ -16,15 +16,12 @@ classdef expt_block < handle
         
         % Factors
         block_type              = 'simultaneous';
-        catch_block             = '';
+        catch_type              = 'no_catch'; % 'catch'
         
         % Non-factors
-        searchAnnulusRadius     = 200;
-        
-        
-        save_filename           = 'test_data.csv';
-        save_filedir            = 'data';
-        
+        searchAnnulusRadius      = 200;
+        catch_luminance_contrast = 100;
+                
     end % properties
     
     
@@ -43,7 +40,7 @@ classdef expt_block < handle
                 % FOR DEBUGGING PURPOSES ONLY
                 case 0
                     % Default settings
-                    %                     obj.subject_ID                  = 'Z99';
+                    %                     obj.subj_id                  = 'Z99';
                     %                     obj.run_order_num               = '99';
                     %                     obj.trials                      = wedgewood_trial.empty;                        %
                     %                     obj.num_trial_copies            = 1;                                            %
@@ -52,25 +49,10 @@ classdef expt_block < handle
                     %                     obj.searchAnnulusRadius           = 200;
                     %
                     
-                case 1
+                case 2
                     obj.block_type = varargin{1};
-                    %
-                    %                 case 11
-                    %
-                    %                     obj.subject_ID                  = varargin{1};
-                    %                     obj.run_order_num               = varargin{2};
-                    %                     obj.num_trial_copies            = varargin{3};                  % 1
-                    %                     obj.set_size_list               = varargin{4};                  % { 4 }
-                    %
-                    %                     obj.target_quadrant_list        = varargin{5};
-                    %                     obj.target_quadrant_distribution= varargin{6};
-                    %                     obj.target_presence_list        = varargin{7};                  % { present }
-                    %                     obj.targetOrientation_list     = varargin{8};                  %
-                    %                     obj.distractor_orientation_list = varargin{9};                  % { left, right }
-                    %
-                    %                     obj.ITI_range                   = varargin{10};                 % { 1000, 1400 }
-                    %                     obj.searchAnnulusRadius           = varargin{11};                 % 200
-                    %
+                    obj.catch_type = varargin{2};
+                  
                 otherwise
                     error('Wrong number of input arguments');
             end
@@ -95,7 +77,11 @@ classdef expt_block < handle
                 
                 
                 % create new single trial
-                obj.trials(trialNum)     = expt_trial(obj.block_type, obj.experimentID);
+                obj.trials(trialNum)     = expt_trial(...
+                    obj.block_type,   ...
+                    obj.catch_type,   ...
+                    obj.expt_id,      ...
+                    obj.subj_id);
                 trialNum                 = trialNum+1;                          % increment trial num
                 
                 
@@ -154,7 +140,7 @@ classdef expt_block < handle
             
         end % function
         
-        function testRun(obj)
+        function run(obj)
             
             try
                 %% Setup QUEST
@@ -189,32 +175,30 @@ classdef expt_block < handle
                 
                 for iTrial = 1:length(obj.trials)
                     %% to determine current trial test value, ask quest what you should test
-                    questOutput = QuestQuantile(qStruct);	% Recommended by Pelli (1987)
-                    luminanceContrastTested = 10.^questOutput;
-                    display(luminanceContrastTested);
+                    
+                    if strcmpi(obj.catch_type, 'no_catch')
+                        % Update luminance contrast value
+                        questOutput = QuestQuantile(qStruct);	% Recommended by Pelli (1987)
+                        luminanceContrastTested = 10.^questOutput;
+                    else
+                        % Do not update luminance contrast
+                        luminanceContrastTested = obj.catch_luminance_contrast;
+                    end
                     
                     stimColor = abs(seColor2RGB(bgColorWd) - luminanceContrastTested);
-                    display(stimColor);
                     
                     %% execute trial
-                    obj.trials(iTrial).run(iTrial, winPtr, background, fixation, stimColor);
+                    obj.trials(iTrial).run(iTrial, winPtr, background, fixation, stimColor);                    
                     
-                    %% update Quest
-                    display(obj.trials(iTrial).accuracy);
-                    qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
-                        obj.trials(iTrial).accuracy(1)); %report what we did
-                    
-                    qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
-                        obj.trials(iTrial).accuracy(2)); %report what we did
-                    
-                    % SAVE TO FILE
+                    if strcmpi(obj.catch_type, 'no_catch')
+                        %% update Quest based on each accuracy of each response
+                        qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
+                            obj.trials(iTrial).response01_acc); 
+                        qStruct = QuestUpdate(qStruct,log10(luminanceContrastTested), ...
+                            obj.trials(iTrial).response02_acc); 
+                    end
+                                   
 
-                    % Save trial information to file
-%                     if(currTrialNum == 1); obj.trials(iTrial).save_to_file('header'); end;             % Save header information to file before first trial
-%                     obj.trials(iTrial).save_to_file(currTrialNum);                                     % Save trial information to file
-
-
-                    WaitSecs(2);
                 end
                 
                 ShowCursor;
