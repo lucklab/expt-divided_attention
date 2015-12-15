@@ -1,4 +1,3 @@
-
 *.m~
 
-data/
+analysis/.ipynb_checkpoints/
